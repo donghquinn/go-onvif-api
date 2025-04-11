@@ -2,6 +2,7 @@ package ptz
 
 import (
 	"encoding/json"
+	"encoding/xml"
 	"io"
 	"log"
 	"net/http"
@@ -109,4 +110,34 @@ func (d *OnvifDevice) MoveRelative(x float64, y float64) error {
 
 	log.Printf("[MOVE_REL] PTZ body Response: %v", string(ptzBody))
 	return nil
+}
+
+func (d *OnvifDevice) GetPresetList(profileToken string) ([]onvif2.PTZPreset, error) {
+	onvifRes, onvifErr := d.CallMethod(ptz.GetPresets{
+		ProfileToken: onvif2.ReferenceToken(profileToken),
+	})
+
+	if onvifErr != nil {
+		log.Printf("[GET_PRESET_LIST] Call Get Preset Method Error: %v", onvifErr)
+	}
+
+	ptzBody, readErr := io.ReadAll(onvifRes.Body)
+
+	if readErr != nil {
+		log.Printf("[GET_PRESET_LIST] Read Response Error: %v", readErr)
+		return nil, readErr
+	}
+
+	var presetList GetPresetsResponse
+
+	if unmarshalErr := xml.Unmarshal(ptzBody, &presetList); unmarshalErr != nil {
+		log.Printf("[GET_PRESET_LIST] Unmarshal Preset List Response Error: %v", unmarshalErr)
+	}
+
+	log.Printf("[GET_PRESET_LIST] Get Preset List: %v", presetList)
+	// presetList := GetPresetsResponse{
+	// 	Preset: []onvif2.PTZPreset{},
+	// }
+
+	return presetList.Preset, nil
 }
