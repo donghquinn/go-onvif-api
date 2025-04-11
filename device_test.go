@@ -12,7 +12,7 @@ func TestDeviceInfo(t *testing.T) {
 	_, capaErr := device.GetDeviceInfo()
 
 	if capaErr != nil {
-		t.Fatalf("Get Device Information error: %v", capaErr)
+		t.Fail()
 	}
 }
 
@@ -22,7 +22,7 @@ func TestDeviceCapa(t *testing.T) {
 	_, capaErr := device.GetDeviceCapability()
 
 	if capaErr != nil {
-		t.Fatalf("Get Device Capabilities error: %v", capaErr)
+		t.Fail()
 	}
 }
 
@@ -32,6 +32,6 @@ func TestServiceCapa(t *testing.T) {
 	_, capaErr := device.GetServiceCapability()
 
 	if capaErr != nil {
-		t.Fatalf("Get Service Capabilities error: %v", capaErr)
+		t.Fail()
 	}
 }

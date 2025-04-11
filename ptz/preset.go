@@ -69,7 +69,7 @@ func (d *OnvifDevice) ApplyPreset(
 	})
 
 	if onvifErr != nil {
-		log.Printf("[SET_PRESET] Call Get Preset Method Error: %v", onvifErr)
+		log.Printf("[APPLY_PRESET] Call Get Preset Method Error: %v", onvifErr)
 	}
 
 	if onvifRes.StatusCode != http.StatusOK {
@@ -114,7 +114,7 @@ func (d *OnvifDevice) RemovePreset(profileToken, presetToken string) error {
 	})
 
 	if onvifErr != nil {
-		log.Printf("[MOVE_REL] Move Relative Error: %v", onvifErr)
+		log.Printf("[REMOVE_PRESET] Move Relative Error: %v", onvifErr)
 		return onvifErr
 	}
 
