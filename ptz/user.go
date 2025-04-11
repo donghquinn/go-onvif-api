@@ -10,33 +10,33 @@ import (
 	onvif2 "github.com/use-go/onvif/xsd/onvif"
 )
 
-func (d *OnvifDevice) GetProfile(token string) error {
+func (d *OnvifDevice) GetProfile(token string) (Profile, error) {
 	onvifRes, onvifErr := d.CallMethod(media.GetProfile{
 		ProfileToken: onvif2.ReferenceToken(token),
 	})
 
 	if onvifErr != nil {
 		log.Printf("[GET_PROFILE] Create User Method Error: %v", onvifErr)
-		return nil
+		return Profile{}, onvifErr
 	}
 
 	response, readErr := io.ReadAll(onvifRes.Body)
 
 	if readErr != nil {
 		log.Printf("[GET_PROFILE] Create User Method Error: %v", onvifErr)
-		return nil
+		return Profile{}, readErr
 	}
 
 	var profileRes DefaultResponse[GetProfileResponseBody]
 
 	if unmarshal := xml.Unmarshal(response, &profileRes); unmarshal != nil {
 		log.Printf("[GET_PROFILE] Unmarshal Profile: %v", unmarshal)
-		return unmarshal
+		return Profile{}, unmarshal
 	}
 
 	log.Printf("[GET_PROFILE] ProfileList Res: %v", profileRes.Body.GetProfileResponse.Profile)
 
-	return nil
+	return profileRes.Body.GetProfileResponse.Profile, nil
 }
 
 func (d *OnvifDevice) CreateProfile(name string, token string) error {
@@ -61,19 +61,19 @@ func (d *OnvifDevice) CreateProfile(name string, token string) error {
 	return nil
 }
 
-func (d *OnvifDevice) GetUserList() []onvif2.User {
+func (d *OnvifDevice) GetUserList() ([]User, error) {
 	onvifRes, onvifErr := d.CallMethod(device.GetUsers{})
 
 	if onvifErr != nil {
 		log.Printf("[CREATE_USER] Create User Method Error: %v", onvifErr)
-		return nil
+		return nil, onvifErr
 	}
 
 	response, readErr := io.ReadAll(onvifRes.Body)
 
 	if readErr != nil {
 		log.Printf("[CREATE_USER] Read Response Error: %v", readErr)
-		return nil
+		return nil, readErr
 	}
 
 	var userListResponse DefaultResponse[GetUserResponseBody]
@@ -82,9 +82,7 @@ func (d *OnvifDevice) GetUserList() []onvif2.User {
 		log.Printf("[GET_USER_LIST] Unmarshal XML Error: %v", marshalErr)
 	}
 
-	log.Printf("[GET_USER_LIST] Get User List Response: %v", userListResponse.Body.GetUsersResponse.User)
-
-	return nil
+	return userListResponse.Body.GetUsersResponse.User, nil
 }
 
 func (d *OnvifDevice) CreateUser(userName string, userId string, passwd string) error {
