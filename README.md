@@ -15,6 +15,11 @@
 ---
 
 ### Device
+#### Device Info
+* Firmware, SerialNumber, HardwareId, and Manufacturer
+
+#### Service Capabilities
+* Network, Security, System, and Misc
 
 ---
 
