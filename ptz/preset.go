@@ -102,5 +102,25 @@ func (d *OnvifDevice) GetPresetList(profileToken string) ([]onvif2.PTZPreset, er
 		log.Printf("[GET_PRESET_LIST] Unmarshal Preset List Response Error: %v", unmarshalErr)
 	}
 
+	// log.Printf("sdcasd: %v", presetList.Preset)
+
 	return presetList.Preset, nil
+}
+
+func (d *OnvifDevice) RemovePreset(profileToken, presetToken string) error {
+	onvifRes, onvifErr := d.CallMethod(ptz.RemovePreset{
+		ProfileToken: onvif2.ReferenceToken(profileToken),
+		PresetToken:  onvif2.ReferenceToken(presetToken),
+	})
+
+	if onvifErr != nil {
+		log.Printf("[MOVE_REL] Move Relative Error: %v", onvifErr)
+		return onvifErr
+	}
+
+	if onvifRes.StatusCode != http.StatusOK {
+		return fmt.Errorf("move relative response error: %v", onvifRes.StatusCode)
+	}
+
+	return nil
 }

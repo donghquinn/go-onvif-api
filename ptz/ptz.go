@@ -132,3 +132,63 @@ func (d *OnvifDevice) GetConfiguration(profileToken string) {
 
 	log.Printf("adcd: %v", string(ptzBody))
 }
+
+func (d *OnvifDevice) GoToDefaultPosition(
+	profileToken string,
+	panTiltX float64,
+	pantiltY float64,
+	zoomX float64,
+	isAbsolute bool,
+) error {
+	panTiltSpace := AbsolutePanTiltSpace
+	zoomSpace := AbsoluteZoomSpace
+
+	if !isAbsolute {
+		panTiltSpace = RelativePanTiltSpace
+		zoomSpace = RelativeZoomSpace
+	}
+
+	panTilt := onvif2.Vector2D{
+		X:     panTiltX,
+		Y:     pantiltY,
+		Space: xsd.AnyURI(panTiltSpace),
+	}
+
+	zoom := onvif2.Vector1D{
+		X:     zoomX,
+		Space: xsd.AnyURI(zoomSpace),
+	}
+
+	onvifRes, onvifErr := d.CallMethod(ptz.GotoHomePosition{
+		ProfileToken: onvif2.ReferenceToken(profileToken),
+		Speed:        onvif2.PTZSpeed{PanTilt: panTilt, Zoom: zoom},
+	})
+
+	if onvifErr != nil {
+		log.Printf("[MOVE_REL] Move Relative Error: %v", onvifErr)
+		return onvifErr
+	}
+
+	if onvifRes.StatusCode != http.StatusOK {
+		return fmt.Errorf("move relative response error: %v", onvifRes.StatusCode)
+	}
+
+	return nil
+}
+
+func (d *OnvifDevice) CreateDefaultPosition(profileToken string) error {
+	onvifRes, onvifErr := d.CallMethod(ptz.SetHomePosition{
+		ProfileToken: onvif2.ReferenceToken(profileToken),
+	})
+
+	if onvifErr != nil {
+		log.Printf("[SET_HOME_POS] Move Relative Error: %v", onvifErr)
+		return onvifErr
+	}
+
+	if onvifRes.StatusCode != http.StatusOK {
+		return fmt.Errorf("move relative response error: %v", onvifRes.StatusCode)
+	}
+
+	return nil
+}
