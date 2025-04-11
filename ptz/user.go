@@ -2,12 +2,15 @@ package ptz
 
 import (
 	"encoding/xml"
+	"fmt"
 	"io"
 	"log"
+	"net/http"
 
 	"github.com/use-go/onvif/device"
 	"github.com/use-go/onvif/media"
 	onvif2 "github.com/use-go/onvif/xsd/onvif"
+	"org.donghyuns.com/onvif/ptz/util"
 )
 
 func (d *OnvifDevice) GetProfile(token string) (Profile, error) {
@@ -16,14 +19,19 @@ func (d *OnvifDevice) GetProfile(token string) (Profile, error) {
 	})
 
 	if onvifErr != nil {
-		log.Printf("[GET_PROFILE] Create User Method Error: %v", onvifErr)
+		log.Printf("[GET_PROFILE] Create Profile Method Error: %v", onvifErr)
 		return Profile{}, onvifErr
+	}
+
+	if onvifRes.StatusCode != http.StatusOK {
+		log.Printf("[GET_PROFILE] Create Profile Status Code Error: %v", onvifErr)
+		return Profile{}, fmt.Errorf("create user response failed. %v", onvifRes.StatusCode)
 	}
 
 	response, readErr := io.ReadAll(onvifRes.Body)
 
 	if readErr != nil {
-		log.Printf("[GET_PROFILE] Create User Method Error: %v", onvifErr)
+		log.Printf("[GET_PROFILE] Create Profile Method Error: %v", onvifErr)
 		return Profile{}, readErr
 	}
 
@@ -39,15 +47,22 @@ func (d *OnvifDevice) GetProfile(token string) (Profile, error) {
 	return profileRes.Body.GetProfileResponse.Profile, nil
 }
 
-func (d *OnvifDevice) CreateProfile(name string, token string) error {
+func (d *OnvifDevice) CreateProfile(name string) error {
+	referenceToken := util.CreateToken()
+
 	onvifRes, onvifErr := d.CallMethod(media.CreateProfile{
 		Name:  onvif2.Name(name),
-		Token: onvif2.ReferenceToken(token),
+		Token: onvif2.ReferenceToken(referenceToken),
 	})
 
 	if onvifErr != nil {
 		log.Printf("[CREATE_PROFILE] Create User Method Error: %v", onvifErr)
 		return nil
+	}
+
+	if onvifRes.StatusCode != http.StatusOK {
+		log.Printf("[CREATE_PROFILE] Create User Status Code Error: %v", onvifErr)
+		return fmt.Errorf("create user response failed. %v", onvifRes.StatusCode)
 	}
 
 	response, readErr := io.ReadAll(onvifRes.Body)

@@ -16,6 +16,7 @@ func TestCreateUser(t *testing.T) {
 
 func TestGetUserList(t *testing.T) {
 	device := ptz.DeviceConnect("192.168.0.152:10000")
+
 	_, getUserListErr := device.GetUserList()
 
 	if getUserListErr != nil {
@@ -25,7 +26,8 @@ func TestGetUserList(t *testing.T) {
 
 func TestCreateProfile(t *testing.T) {
 	device := ptz.DeviceConnect("192.168.0.152:10000")
-	if createErr := device.CreateProfile("test_profile", "123456"); createErr != nil {
+
+	if createErr := device.CreateProfile("test_profile"); createErr != nil {
 		t.Fatalf("Create Profile Error: %v", createErr)
 	}
 }
