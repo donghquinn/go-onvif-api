@@ -6,6 +6,16 @@ import (
 	"org.donghyuns.com/onvif/ptz/ptz"
 )
 
+func TestDeviceInfo(t *testing.T) {
+	device := ptz.DeviceConnect("192.168.0.152:10000")
+
+	_, capaErr := device.GetDeviceInfo()
+
+	if capaErr != nil {
+		t.Fatalf("Get Device Information error: %v", capaErr)
+	}
+}
+
 func TestDeviceCapa(t *testing.T) {
 	device := ptz.DeviceConnect("192.168.0.152:10000")
 
