@@ -2,17 +2,22 @@ package ptz
 
 import (
 	"encoding/xml"
+	"fmt"
 	"io"
 	"log"
+	"net/http"
 
 	"github.com/use-go/onvif/ptz"
+	"github.com/use-go/onvif/xsd"
+	"org.donghyuns.com/onvif/ptz/util"
 
 	onvif2 "github.com/use-go/onvif/xsd/onvif"
 )
 
-func (d *OnvifDevice) MoveRelative(x float64, y float64) error {
+// Move Relative
+func (d *OnvifDevice) MoveRelative(profileToken string, x float64, y float64) error {
 	onvifRes, onvifErr := d.CallMethod(ptz.RelativeMove{
-		ProfileToken: "Profile_2",
+		ProfileToken: onvif2.ReferenceToken(profileToken),
 		Translation: onvif2.PTZVector{
 			PanTilt: onvif2.Vector2D{
 				X:     x,
@@ -31,6 +36,10 @@ func (d *OnvifDevice) MoveRelative(x float64, y float64) error {
 		return onvifErr
 	}
 
+	if onvifRes.StatusCode != http.StatusOK {
+		return fmt.Errorf("move relative response error: %v", onvifRes.StatusCode)
+	}
+
 	ptzBody, readErr := io.ReadAll(onvifRes.Body)
 
 	if readErr != nil {
@@ -42,6 +51,66 @@ func (d *OnvifDevice) MoveRelative(x float64, y float64) error {
 	return nil
 }
 
+// Create Preset
+func (d *OnvifDevice) CreatePreset(profileToken, presetName string) error {
+	presetToken := util.CreateToken()
+
+	onvifRes, onvifErr := d.CallMethod(ptz.SetPreset{
+		ProfileToken: onvif2.ReferenceToken(profileToken),
+		PresetName:   xsd.String(presetName),
+		PresetToken:  onvif2.ReferenceToken(presetToken),
+	})
+
+	if onvifErr != nil {
+		log.Printf("[SET_PRESET] Call Get Preset Method Error: %v", onvifErr)
+	}
+
+	if onvifRes.StatusCode != http.StatusOK {
+		return fmt.Errorf("set preset response error: %v", onvifRes.StatusCode)
+	}
+
+	return nil
+}
+
+// Apply Preset
+func (d *OnvifDevice) MoveWithPreset(
+	profileToken,
+	presetToken string,
+	panTiltX float64,
+	pantiltY float64,
+	panTiltSpace string,
+	zoomX float64,
+	zoomSpace string,
+) error {
+	panTilt := onvif2.Vector2D{
+		X:     panTiltX,
+		Y:     pantiltY,
+		Space: xsd.AnyURI(panTiltSpace),
+	}
+
+	zoom := onvif2.Vector1D{
+		X:     zoomX,
+		Space: xsd.AnyURI(zoomSpace),
+	}
+
+	onvifRes, onvifErr := d.CallMethod(ptz.GotoPreset{
+		ProfileToken: onvif2.ReferenceToken(profileToken),
+		PresetToken:  onvif2.ReferenceToken(presetToken),
+		Speed:        onvif2.PTZSpeed{PanTilt: panTilt, Zoom: zoom},
+	})
+
+	if onvifErr != nil {
+		log.Printf("[SET_PRESET] Call Get Preset Method Error: %v", onvifErr)
+	}
+
+	if onvifRes.StatusCode != http.StatusOK {
+		return fmt.Errorf("set preset response error: %v", onvifRes.StatusCode)
+	}
+
+	return nil
+}
+
+// Get Preset List
 func (d *OnvifDevice) GetPresetList(profileToken string) ([]onvif2.PTZPreset, error) {
 	onvifRes, onvifErr := d.CallMethod(ptz.GetPresets{
 		ProfileToken: onvif2.ReferenceToken(profileToken),
@@ -63,11 +132,6 @@ func (d *OnvifDevice) GetPresetList(profileToken string) ([]onvif2.PTZPreset, er
 	if unmarshalErr := xml.Unmarshal(ptzBody, &presetList); unmarshalErr != nil {
 		log.Printf("[GET_PRESET_LIST] Unmarshal Preset List Response Error: %v", unmarshalErr)
 	}
-
-	log.Printf("[GET_PRESET_LIST] Get Preset List: %v", presetList)
-	// presetList := GetPresetsResponse{
-	// 	Preset: []onvif2.PTZPreset{},
-	// }
 
 	return presetList.Preset, nil
 }

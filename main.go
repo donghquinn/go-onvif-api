@@ -6,11 +6,12 @@ func main() {
 	device := ptz.DeviceConnect("192.168.0.152:10000")
 
 	// device.GetServiceCapability()
-	device.GetDeviceInfo()
+	// device.GetDeviceInfo()
 	// device.CreateProfile("Profile_2")
 	// device.GetProfile("123456")
 	// device.GetUserList()
 	// device.CreateUser("dong", "dong", "1234")
 	// device.GetDeviceCapability()
 	// device.GetPresetList("123456")
+	device.MoveRelative("123456", -1.12391231, 10.123123)
 }
