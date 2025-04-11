@@ -165,7 +165,7 @@ func (d *OnvifDevice) GoToDefaultPosition(
 	})
 
 	if onvifErr != nil {
-		log.Printf("[MOVE_REL] Move Relative Error: %v", onvifErr)
+		log.Printf("[GOTO_HOME] Move Relative Error: %v", onvifErr)
 		return onvifErr
 	}
 

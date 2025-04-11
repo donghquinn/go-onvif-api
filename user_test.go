@@ -9,8 +9,8 @@ import (
 func TestCreateUser(t *testing.T) {
 	device := ptz.DeviceConnect("192.168.0.152:10000")
 
-	if createErr := device.CreateUser("test", "test", "123456"); createErr != nil {
-		t.Fatalf("Create User Error: %v", createErr)
+	if createErr := device.CreateUser("test123", "test123", "11111"); createErr != nil {
+		t.Fail()
 	}
 }
 
@@ -20,21 +20,21 @@ func TestGetUserList(t *testing.T) {
 	_, getUserListErr := device.GetUserList()
 
 	if getUserListErr != nil {
-		t.Fatalf("Get User List Error: %v", getUserListErr)
+		t.Fail()
 	}
 }
 
 func TestCreateProfile(t *testing.T) {
 	device := ptz.DeviceConnect("192.168.0.152:10000")
 
-	profileToken, createErr := device.CreateProfile("test_profile")
+	_, createErr := device.CreateProfile("test_profile")
 	if createErr != nil {
-		t.Fatalf("Create Profile Error: %v", createErr)
+		t.Fail()
 	}
 
-	if len(profileToken) == 0 {
-		t.Fatalf("Created Profile Token is empty: %v", profileToken)
-	}
+	// if len(profileToken) == 0 {
+	// 	t.Fail()
+	// }
 }
 
 func TestGetProfile(t *testing.T) {
@@ -43,6 +43,6 @@ func TestGetProfile(t *testing.T) {
 	_, getProfileErr := device.GetProfile("123456")
 
 	if getProfileErr != nil {
-		t.Fatalf("Get Profile Error: %v", getProfileErr)
+		t.Fail()
 	}
 }

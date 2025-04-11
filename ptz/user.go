@@ -27,7 +27,7 @@ func (d *OnvifDevice) CreateUser(userName string, userId string, passwd string) 
 	}
 
 	if onvifRes.StatusCode != http.StatusOK {
-		log.Printf("[CREATE_USER] Create User Status Code Error: %v", onvifErr)
+		log.Printf("[CREATE_USER] Create User Status Code Error: %v", onvifRes.StatusCode)
 		return fmt.Errorf("create user response failed. %v", onvifRes.StatusCode)
 	}
 
