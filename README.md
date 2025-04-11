@@ -38,3 +38,12 @@
     * X: X value on PTZ Vector
     * Y: Y value on PTZ Vector
     * Space: 
+
+
+### Node
+#### Node List
+* Will Return all the nodes(CCTVs/Cameras)
+
+#### Node Info
+* Get Node(CCTV/Camera) Data with node token
+    * the token could be found from node list - Token value
