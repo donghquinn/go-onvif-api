@@ -16,5 +16,6 @@ func main() {
 	// device.MoveRelative("123456", -1.12391231, 10.123123)
 	// device.GetStatus("123456")
 	// device.GetConfiguration("123456")
-	device.GetNodeList()
+	// device.GetNodeList()
+	device.GetNodeInfo("PTZNodeToken_1")
 }

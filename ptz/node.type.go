@@ -2,22 +2,25 @@ package ptz
 
 import "encoding/xml"
 
-type GetNodesResponseBody struct {
-	XMLName xml.Name                    `xml:"Envelope"`
-	Body    GetNodesResponseBodyContent `xml:"Body"`
-}
-
 type GetNodesResponseBodyContent struct {
 	GetNodesResponse GetNodesResponse `xml:"GetNodesResponse"`
 }
 
+type GetNodeResponseBody struct {
+	GetNodeResponse GetNodeResponse `xml:"GetNodeResponse"`
+}
+
+type GetNodeResponse struct {
+	Node PTZNode `xml:"PTZNode"`
+}
+
 type GetNodesResponse struct {
-	PTZNode []PTZNode `xml:"PTZNode"`
+	Node []PTZNode `xml:"PTZNode"`
 }
 
 // PTZNode는 PTZ 노드의 핵심 정보를 포함합니다
 type PTZNode struct {
-	Token                  string           `xml:"token,attr"`
+	NodeToken              string           `xml:"token,attr"`
 	FixedHomePosition      bool             `xml:"FixedHomePosition,attr"`
 	GeoMove                bool             `xml:"GeoMove,attr"`
 	Name                   string           `xml:"Name"`
