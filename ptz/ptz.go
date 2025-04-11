@@ -133,6 +133,7 @@ func (d *OnvifDevice) GetConfiguration(profileToken string) {
 	log.Printf("adcd: %v", string(ptzBody))
 }
 
+// Move back to Default Position
 func (d *OnvifDevice) GoToDefaultPosition(
 	profileToken string,
 	panTiltX float64,
@@ -176,6 +177,7 @@ func (d *OnvifDevice) GoToDefaultPosition(
 	return nil
 }
 
+// Create Default Position
 func (d *OnvifDevice) CreateDefaultPosition(profileToken string) error {
 	onvifRes, onvifErr := d.CallMethod(ptz.SetHomePosition{
 		ProfileToken: onvif2.ReferenceToken(profileToken),
