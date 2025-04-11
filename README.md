@@ -1,4 +1,6 @@
 # PTZ Controller Application
+* SOAP Request with ONVIF
+* It's a example of ONVIF requests and usages
 
 ## Dependencies
 * https://github.com/use-go/onvif
