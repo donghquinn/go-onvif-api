@@ -13,5 +13,8 @@ func main() {
 	// device.CreateUser("dong", "dong", "1234")
 	// device.GetDeviceCapability()
 	// device.GetPresetList("123456")
-	device.MoveRelative("123456", -1.12391231, 10.123123)
+	// device.MoveRelative("123456", -1.12391231, 10.123123)
+	// device.GetStatus("123456")
+	// device.GetConfiguration("123456")
+	device.GetNodeList()
 }

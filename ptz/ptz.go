@@ -188,3 +188,41 @@ func (d *OnvifDevice) GetPresetList(profileToken string) ([]onvif2.PTZPreset, er
 
 	return presetList.Preset, nil
 }
+
+func (d *OnvifDevice) GetStatus(profileToken string) {
+	onvifRes, onvifErr := d.CallMethod(ptz.GetStatus{
+		ProfileToken: onvif2.ReferenceToken(profileToken),
+	})
+
+	if onvifErr != nil {
+		log.Printf("[GET_STATUS] Call Get Preset Method Error: %v", onvifErr)
+	}
+
+	ptzBody, readErr := io.ReadAll(onvifRes.Body)
+
+	if readErr != nil {
+		log.Printf("[GET_STATUS] Read Response Error: %v", readErr)
+		// return nil, readErr
+	}
+
+	log.Printf("adcd: %v", string(ptzBody))
+}
+
+func (d *OnvifDevice) GetConfiguration(profileToken string) {
+	onvifRes, onvifErr := d.CallMethod(ptz.GetConfiguration{
+		ProfileToken: onvif2.ReferenceToken(profileToken),
+	})
+
+	if onvifErr != nil {
+		log.Printf("[GET_CONFIG] Call Get Preset Method Error: %v", onvifErr)
+	}
+
+	ptzBody, readErr := io.ReadAll(onvifRes.Body)
+
+	if readErr != nil {
+		log.Printf("[GET_CONFIG] Read Response Error: %v", readErr)
+		// return nil, readErr
+	}
+
+	log.Printf("adcd: %v", string(ptzBody))
+}
