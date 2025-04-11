@@ -1,7 +1,9 @@
 package main
 
+import "org.donghyuns.com/onvif/ptz/ptz"
+
 func main() {
-	// device := ptz.DeviceConnect("192.168.0.152:10000")
+	device := ptz.DeviceConnect("192.168.0.152:10000")
 
 	// device.GetServiceCapability()
 	// device.GetDeviceInfo()
@@ -12,7 +14,7 @@ func main() {
 	// device.GetDeviceCapability()
 	// device.GetPresetList("123456")
 	// device.MoveRelative("PTZNodeToken_1", -1.12391231, 10.123123)
-	// device.GetStatus("123456")
+	device.GetStatus("123456")
 	// device.GetConfiguration("PTZNodeToken_1")
 	// device.GetNodeList()
 	// device.GetNodeInfo("PTZNodeToken_1")
