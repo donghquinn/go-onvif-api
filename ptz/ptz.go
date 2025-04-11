@@ -60,7 +60,7 @@ func (d *OnvifDevice) GetServiceCapability() (string, error) {
 	return string(marshaled), nil
 }
 
-func (d *OnvifDevice) GetDeviceCapa() (string, error) {
+func (d *OnvifDevice) GetDeviceCapability() (string, error) {
 	response, capErr := d.CallMethod(device.GetCapabilities{Category: "PTZ"})
 
 	if capErr != nil {

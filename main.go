@@ -9,5 +9,6 @@ func main() {
 	// device.GetProfile("123456")
 	// device.GetUserList()
 	// device.CreateUser("dong", "dong", "1234")
+	// device.GetDeviceCapability()
 	device.GetPresetList("123456")
 }
