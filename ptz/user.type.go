@@ -4,12 +4,13 @@ import (
 	"encoding/xml"
 )
 
-type DefaultResponse struct {
-	XMLName xml.Name     `xml:"Envelope"`
-	Body    ResponseBody `xml:"Body"`
+type DefaultResponse[T any] struct {
+	XMLName xml.Name `xml:"Envelope"`
+	Body    T        `xml:"Body"`
 }
 
-type ResponseBody struct {
+// ================ USER
+type GetUserResponseBody struct {
 	GetUsersResponse GetUsersResponse `xml:"GetUsersResponse"`
 }
 
@@ -20,6 +21,19 @@ type GetUsersResponse struct {
 type User struct {
 	Username  string `xml:"Username"`
 	UserLevel string `xml:"UserLevel"`
+}
+
+// ================ PROFILE
+type GetProfileResponseBody struct {
+	GetProfileResponse GetProfileResponse `xml:"GetProfileResponse"`
+}
+
+type GetProfileResponse struct {
+	Profile Profile `xml:"Profile"`
+}
+
+type Profile struct {
+	Name string `xml:"Name"`
 }
 
 // type DefaultResponse struct {

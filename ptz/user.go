@@ -27,7 +27,15 @@ func (d *OnvifDevice) GetProfile(token string) error {
 		return nil
 	}
 
-	log.Printf("[GET_PROFILE] ProfileList Res: %v", string(response))
+	var profileRes DefaultResponse[GetProfileResponseBody]
+
+	if unmarshal := xml.Unmarshal(response, &profileRes); unmarshal != nil {
+		log.Printf("[GET_PROFILE] Unmarshal Profile: %v", unmarshal)
+		return unmarshal
+	}
+
+	log.Printf("[GET_PROFILE] ProfileList Res: %v", profileRes.Body.GetProfileResponse.Profile)
+
 	return nil
 }
 
@@ -68,7 +76,8 @@ func (d *OnvifDevice) GetUserList() []onvif2.User {
 		return nil
 	}
 
-	var userListResponse DefaultResponse
+	var userListResponse DefaultResponse[GetUserResponseBody]
+
 	if marshalErr := xml.Unmarshal(response, &userListResponse); marshalErr != nil {
 		log.Printf("[GET_USER_LIST] Unmarshal XML Error: %v", marshalErr)
 	}
