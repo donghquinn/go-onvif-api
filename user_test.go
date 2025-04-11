@@ -27,8 +27,13 @@ func TestGetUserList(t *testing.T) {
 func TestCreateProfile(t *testing.T) {
 	device := ptz.DeviceConnect("192.168.0.152:10000")
 
-	if createErr := device.CreateProfile("test_profile"); createErr != nil {
+	profileToken, createErr := device.CreateProfile("test_profile")
+	if createErr != nil {
 		t.Fatalf("Create Profile Error: %v", createErr)
+	}
+
+	if len(profileToken) == 0 {
+		t.Fatalf("Created Profile Token is empty: %v", profileToken)
 	}
 }
 
