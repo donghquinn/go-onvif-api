@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/use-go/onvif/ptz"
 	"github.com/use-go/onvif/xsd"
@@ -48,6 +49,51 @@ func (d *OnvifDevice) MoveRelative(profileToken string, x float64, y float64) er
 	}
 
 	log.Printf("[MOVE_REL] PTZ body Response: %v", string(ptzBody))
+	return nil
+}
+
+func (d *OnvifDevice) MoveContinuous(
+	profileToken string,
+	presetToken string,
+	panTiltX float64,
+	pantiltY float64,
+	zoomX float64,
+	isAbsolute bool,
+	timeout time.Duration,
+) error {
+	panTiltSpace := AbsolutePanTiltSpace
+	zoomSpace := AbsoluteZoomSpace
+
+	if !isAbsolute {
+		panTiltSpace = RelativePanTiltSpace
+		zoomSpace = RelativeZoomSpace
+	}
+
+	panTilt := onvif2.Vector2D{
+		X:     panTiltX,
+		Y:     pantiltY,
+		Space: xsd.AnyURI(panTiltSpace),
+	}
+
+	zoom := onvif2.Vector1D{
+		X:     zoomX,
+		Space: xsd.AnyURI(zoomSpace),
+	}
+
+	onvifRes, onvifErr := d.CallMethod(ptz.ContinuousMove{
+		ProfileToken: onvif2.ReferenceToken(profileToken),
+		Velocity:     onvif2.PTZSpeed{PanTilt: panTilt, Zoom: zoom},
+		// Timeout:      xsd.Duration(timeout),
+	})
+
+	if onvifErr != nil {
+		log.Printf("[MOVE_CONTINUOUS] Call Get Preset Method Error: %v", onvifErr)
+	}
+
+	if onvifRes.StatusCode != http.StatusOK {
+		return fmt.Errorf("move continuous response error: %v", onvifRes.StatusCode)
+	}
+
 	return nil
 }
 
