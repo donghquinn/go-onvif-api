@@ -101,16 +101,12 @@ func (d *OnvifDevice) GetDeviceCapability() (DeviceCapabilitiesType, error) {
 		return DeviceCapabilitiesType{}, readErr
 	}
 
-	log.Printf("asdcasdcds: %v", string(capaBody))
-
 	var deviceCapabilities DefaultResponse[DeviceCapabilitiesResponseBody]
 
 	if unmarshalErr := xml.Unmarshal(capaBody, &deviceCapabilities); unmarshalErr != nil {
 		log.Printf("[GET_SERVICE_CAPA] Unmarshal Response Error: %v", unmarshalErr)
 		return DeviceCapabilitiesType{}, unmarshalErr
 	}
-
-	log.Printf("[GET_SERVICE_CAPA] Response: %v", deviceCapabilities.Body.Response.Capabilities)
 
 	return deviceCapabilities.Body.Response.Capabilities, nil
 }

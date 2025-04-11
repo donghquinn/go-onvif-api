@@ -13,6 +13,53 @@ import (
 	"org.donghyuns.com/onvif/ptz/util"
 )
 
+func (d *OnvifDevice) CreateUser(userName string, userId string, passwd string) error {
+	onvifRes, onvifErr := d.CallMethod(device.CreateUsers{
+		User: onvif2.User{
+			Username: userName,
+			Password: passwd,
+		},
+	})
+
+	if onvifErr != nil {
+		log.Printf("[CREATE_USER] Create User Method Error: %v", onvifErr)
+		return onvifErr
+	}
+
+	if onvifRes.StatusCode != http.StatusOK {
+		log.Printf("[CREATE_USER] Create User Status Code Error: %v", onvifErr)
+		return fmt.Errorf("create user response failed. %v", onvifRes.StatusCode)
+	}
+
+	return nil
+}
+
+/*
+Create Profile
+@name: Profile Name
+@Return: Profile Token
+*/
+func (d *OnvifDevice) CreateProfile(name string) (string, error) {
+	referenceToken := util.CreateToken()
+
+	onvifRes, onvifErr := d.CallMethod(media.CreateProfile{
+		Name:  onvif2.Name(name),
+		Token: onvif2.ReferenceToken(referenceToken),
+	})
+
+	if onvifErr != nil {
+		log.Printf("[CREATE_PROFILE] Create User Method Error: %v", onvifErr)
+		return "", nil
+	}
+
+	if onvifRes.StatusCode != http.StatusOK {
+		log.Printf("[CREATE_PROFILE] Create User Status Code Error: %v", onvifErr)
+		return "", fmt.Errorf("create user response failed. %v", onvifRes.StatusCode)
+	}
+
+	return referenceToken, nil
+}
+
 func (d *OnvifDevice) GetProfile(token string) (Profile, error) {
 	onvifRes, onvifErr := d.CallMethod(media.GetProfile{
 		ProfileToken: onvif2.ReferenceToken(token),
@@ -47,32 +94,6 @@ func (d *OnvifDevice) GetProfile(token string) (Profile, error) {
 	return profileRes.Body.GetProfileResponse.Profile, nil
 }
 
-/*
-Create Profile
-@name: Profile Name
-@Return: Profile Token
-*/
-func (d *OnvifDevice) CreateProfile(name string) (string, error) {
-	referenceToken := util.CreateToken()
-
-	onvifRes, onvifErr := d.CallMethod(media.CreateProfile{
-		Name:  onvif2.Name(name),
-		Token: onvif2.ReferenceToken(referenceToken),
-	})
-
-	if onvifErr != nil {
-		log.Printf("[CREATE_PROFILE] Create User Method Error: %v", onvifErr)
-		return "", nil
-	}
-
-	if onvifRes.StatusCode != http.StatusOK {
-		log.Printf("[CREATE_PROFILE] Create User Status Code Error: %v", onvifErr)
-		return "", fmt.Errorf("create user response failed. %v", onvifRes.StatusCode)
-	}
-
-	return referenceToken, nil
-}
-
 func (d *OnvifDevice) GetUserList() ([]User, error) {
 	onvifRes, onvifErr := d.CallMethod(device.GetUsers{})
 
@@ -100,25 +121,4 @@ func (d *OnvifDevice) GetUserList() ([]User, error) {
 	}
 
 	return userListResponse.Body.GetUsersResponse.User, nil
-}
-
-func (d *OnvifDevice) CreateUser(userName string, userId string, passwd string) error {
-	onvifRes, onvifErr := d.CallMethod(device.CreateUsers{
-		User: onvif2.User{
-			Username: userName,
-			Password: passwd,
-		},
-	})
-
-	if onvifErr != nil {
-		log.Printf("[CREATE_USER] Create User Method Error: %v", onvifErr)
-		return onvifErr
-	}
-
-	if onvifRes.StatusCode != http.StatusOK {
-		log.Printf("[CREATE_USER] Create User Status Code Error: %v", onvifErr)
-		return fmt.Errorf("create user response failed. %v", onvifRes.StatusCode)
-	}
-
-	return nil
 }
