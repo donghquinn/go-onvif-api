@@ -22,11 +22,11 @@ func (d *OnvifDevice) MoveRelative(profileToken string, x float64, y float64) er
 			PanTilt: onvif2.Vector2D{
 				X:     x,
 				Y:     y,
-				Space: "http://www.onvif.org/ver10/tptz/PanTiltSpaces/TranslationGenericSpace",
+				Space: xsd.AnyURI(RelativePanTiltSpace),
 			},
 			Zoom: onvif2.Vector1D{
 				X:     0,
-				Space: "http://www.onvif.org/ver10/tptz/ZoomSpaces/TranslationGenericSpace",
+				Space: xsd.AnyURI(RelativeZoomSpace),
 			},
 		},
 	})
@@ -73,15 +73,22 @@ func (d *OnvifDevice) CreatePreset(profileToken, presetName string) error {
 }
 
 // Apply Preset
-func (d *OnvifDevice) MoveWithPreset(
+func (d *OnvifDevice) ApplyPreset(
 	profileToken,
 	presetToken string,
 	panTiltX float64,
 	pantiltY float64,
-	panTiltSpace string,
 	zoomX float64,
-	zoomSpace string,
+	isAbsolute bool,
 ) error {
+	panTiltSpace := AbsolutePanTiltSpace
+	zoomSpace := AbsoluteZoomSpace
+
+	if !isAbsolute {
+		panTiltSpace = RelativePanTiltSpace
+		zoomSpace = RelativeZoomSpace
+	}
+
 	panTilt := onvif2.Vector2D{
 		X:     panTiltX,
 		Y:     pantiltY,
