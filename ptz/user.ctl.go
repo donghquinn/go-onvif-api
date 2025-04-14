@@ -47,3 +47,47 @@ func CreateUserCtl(res http.ResponseWriter, req *http.Request) {
 		Message: "SUCCESS",
 	})
 }
+
+func CreateProfileCtl(res http.ResponseWriter, req *http.Request) {
+	var requestBody CreateProfileRequest
+
+	if unmarshalErr := utils.DecodeBody(req, &requestBody); unmarshalErr != nil {
+		response.Response(res, CreateProfileResponse{
+			Status:  http.StatusBadRequest,
+			Code:    "CPF001",
+			Message: "Invalid Request",
+		})
+		return
+	}
+
+	endpoint, getErr := database.GetDeviceInfo(requestBody.CctvId)
+	if getErr != nil {
+		response.Response(res, CreateProfileResponse{
+			Status:  http.StatusInternalServerError,
+			Code:    "CPF002",
+			Message: "Get Device Info Error",
+		})
+		return
+	}
+
+	device := DeviceConnect(endpoint.Endpoint)
+
+	profileToken, createErr := device.CreateProfile(requestBody.ProfileName)
+
+	if createErr != nil {
+		response.Response(res, CreateProfileResponse{
+			Status:  http.StatusInternalServerError,
+			Code:    "CUR003",
+			Message: "Create User Error",
+		})
+
+		return
+	}
+
+	response.Response(res, CreateProfileResponse{
+		Status:  http.StatusOK,
+		Code:    "0000",
+		Message: "SUCCESS",
+		Result:  profileToken,
+	})
+}

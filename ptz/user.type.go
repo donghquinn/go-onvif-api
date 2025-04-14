@@ -21,6 +21,14 @@ type DefaultResponse[T any] struct {
 	Body    T        `xml:"Body"`
 }
 
+// =========== RESPONSE
+type CreateProfileResponse struct {
+	Status  int    `json:"status"`
+	Code    string `json:"code"`
+	Message string `json:"message"`
+	Result  string `json:"result"`
+}
+
 // ================ USER
 type GetUserResponseBody struct {
 	GetUsersResponse GetUsersResponse `xml:"GetUsersResponse"`
