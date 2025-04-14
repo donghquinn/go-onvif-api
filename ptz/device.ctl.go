@@ -9,13 +9,36 @@ import (
 
 // Get Service Capabilities
 func GetServiceCapaCtl(res http.ResponseWriter, req *http.Request) {
-	device := DeviceConnect("192.168.0.152:10000") // TODO DB 조회
+	cctvId := req.URL.Query().Get("cctv")
+
+	if cctvId == "" {
+		response.Response(res, GetProfileResponse{
+			Status:  http.StatusBadRequest,
+			Code:    "SCP001",
+			Message: "Invalid Params",
+		})
+
+		return
+	}
+
+	endpoint, getErr := database.GetDeviceInfo(cctvId)
+	if getErr != nil {
+		response.Response(res, GetProfileResponse{
+			Status:  http.StatusInternalServerError,
+			Code:    "SCP002",
+			Message: "Get Device Info Error",
+		})
+		return
+	}
+
+	device := DeviceConnect(endpoint.Endpoint) // TODO DB 조회
 	result, getErr := device.GetServiceCapability()
 
 	if getErr != nil {
 		response.Response(res, ServiceCapaResponse{
-			Status: http.StatusInternalServerError,
-			Code:   "SCP001",
+			Status:  http.StatusInternalServerError,
+			Code:    "SCP003",
+			Message: "Get Service Capabilities Error",
 		})
 
 		return
@@ -32,13 +55,35 @@ func GetServiceCapaCtl(res http.ResponseWriter, req *http.Request) {
 
 // Get Device Info
 func GetDeviceInfoCtl(res http.ResponseWriter, req *http.Request) {
-	device := DeviceConnect("192.168.0.152:10000") // TODO DB 조회
+	cctvId := req.URL.Query().Get("cctv")
+
+	if cctvId == "" {
+		response.Response(res, GetProfileResponse{
+			Status:  http.StatusBadRequest,
+			Code:    "DVF001",
+			Message: "Invalid Params",
+		})
+
+		return
+	}
+
+	endpoint, getErr := database.GetDeviceInfo(cctvId)
+	if getErr != nil {
+		response.Response(res, GetProfileResponse{
+			Status:  http.StatusInternalServerError,
+			Code:    "DVF002",
+			Message: "Get Device Info Error",
+		})
+		return
+	}
+
+	device := DeviceConnect(endpoint.Endpoint) // TODO DB 조회
 	result, getErr := device.GetDeviceInfo()
 
 	if getErr != nil {
 		response.Response(res, DeviceInfoResponse{
 			Status: http.StatusInternalServerError,
-			Code:   "DVF001",
+			Code:   "DVF003",
 		})
 
 		return
