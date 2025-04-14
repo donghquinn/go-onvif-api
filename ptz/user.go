@@ -10,7 +10,7 @@ import (
 	"github.com/use-go/onvif/device"
 	"github.com/use-go/onvif/media"
 	onvif2 "github.com/use-go/onvif/xsd/onvif"
-	"org.donghyuns.com/onvif/ptz/util"
+	"org.donghyuns.com/onvif/ptz/utils"
 )
 
 func (d *OnvifDevice) CreateUser(userName string, userId string, passwd string) error {
@@ -40,7 +40,7 @@ Create Profile
 @Return: Profile Token
 */
 func (d *OnvifDevice) CreateProfile(name string) (string, error) {
-	referenceToken := util.CreateToken()
+	referenceToken := utils.CreateToken()
 
 	onvifRes, onvifErr := d.CallMethod(media.CreateProfile{
 		Name:  onvif2.Name(name),

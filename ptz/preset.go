@@ -10,12 +10,12 @@ import (
 	"github.com/use-go/onvif/ptz"
 	"github.com/use-go/onvif/xsd"
 	onvif2 "github.com/use-go/onvif/xsd/onvif"
-	"org.donghyuns.com/onvif/ptz/util"
+	"org.donghyuns.com/onvif/ptz/utils"
 )
 
 // Create Preset
 func (d *OnvifDevice) CreatePreset(profileToken, presetName string) error {
-	presetToken := util.CreateToken()
+	presetToken := utils.CreateToken()
 
 	onvifRes, onvifErr := d.CallMethod(ptz.SetPreset{
 		ProfileToken: onvif2.ReferenceToken(profileToken),
