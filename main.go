@@ -9,11 +9,14 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/joho/godotenv"
 	"org.donghyuns.com/onvif/ptz/configs"
 	"org.donghyuns.com/onvif/ptz/network"
 )
 
 func main() {
+	godotenv.Load(".env")
+
 	server := network.Network()
 
 	// 종료 신호를 받을 채널 생성
