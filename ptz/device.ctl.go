@@ -3,6 +3,7 @@ package ptz
 import (
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"org.donghyuns.com/onvif/ptz/response"
 )
 
@@ -49,5 +50,51 @@ func GetDeviceInfoCtl(res http.ResponseWriter, req *http.Request) {
 		Message: "SUCCESS",
 		Result:  result.Response,
 	})
+	return
+}
+
+// Get Status
+func GetDeviceStatusCtl(res http.ResponseWriter, req *http.Request) {
+	pathVar := mux.Vars(req)
+	profileToken := pathVar["profileToken"]
+
+	// var requestBody GetStatusRequest
+
+	// if unmarshalErr := utils.DecodeBody(req, requestBody); unmarshalErr != nil {
+	// 	response.Response(res, GetStatusResponse{
+	// 		Status:  http.StatusBadRequest,
+	// 		Code:    "STA001",
+	// 		Message: "Invalid Request",
+	// 	})
+	// 	return
+	// }
+
+	device := DeviceConnect("192.168.0.152:10000") // TODO DB 조회
+	result := device.GetStatus(profileToken)
+
+	response.Response(res, result)
+	return
+}
+
+// Get Configuration
+func GetDeviceConfigCtl(res http.ResponseWriter, req *http.Request) {
+	pathVar := mux.Vars(req)
+	profileToken := pathVar["profileToken"]
+
+	// var requestBody GetStatusRequest
+
+	// if unmarshalErr := utils.DecodeBody(req, requestBody); unmarshalErr != nil {
+	// 	response.Response(res, GetConfigurationResponse{
+	// 		Status:  http.StatusBadRequest,
+	// 		Code:    "COF001",
+	// 		Message: "Invalid Request",
+	// 	})
+	// 	return
+	// }
+
+	device := DeviceConnect("192.168.0.152:10000")
+	result := device.GetConfiguration(profileToken)
+
+	response.Response(res, result)
 	return
 }

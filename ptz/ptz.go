@@ -48,6 +48,7 @@ func (d *OnvifDevice) MoveRelative(profileToken string, x float64, y float64) er
 	}
 
 	log.Printf("[MOVE_REL] PTZ body Response: %v", string(ptzBody))
+
 	return nil
 }
 
