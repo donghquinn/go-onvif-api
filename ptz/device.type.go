@@ -2,6 +2,22 @@ package ptz
 
 import onvif2 "github.com/use-go/onvif/xsd/onvif"
 
+// ====== RESPONSE
+type ServiceCapaResponse struct {
+	Status  int                      `json:"status"`
+	Code    string                   `json:"code"`
+	Message string                   `json:"message"`
+	Result  ServiceCapaOnvifResponse `json:"result"`
+}
+
+type DeviceInfoResponse struct {
+	Status  int               `json:"status"`
+	Code    string            `json:"code"`
+	Message string            `json:"message"`
+	Result  DeviceInformation `json:"result"`
+}
+
+// ====== ONVIF
 type ServiceCapaOnvifResponse struct {
 	Capabilities onvif2.Capabilities `json:"capabilities"`
 }
@@ -12,6 +28,18 @@ type DeviceInfoOnvifResponse struct {
 
 type DeviceCapaOnvifResponse struct {
 	DeviceCapabilites onvif2.DeviceCapabilities `json:"deviceCapabilities"`
+}
+
+type DeviceInformationResponseBody struct {
+	Response DeviceInformation `xml:"GetDeviceInformationResponse"`
+}
+
+type DeviceInformation struct {
+	Manufacturer    string `xml:"Manufacturer"`
+	Model           string `xml:"Model"`
+	FirmwareVersion string `xml:"FirmwareVersion"`
+	SerialNumber    string `xml:"SerialNumber"`
+	HardwareId      string `xml:"HardwareId"`
 }
 
 // type ServiceCapabilitiesResponseBody struct {
@@ -90,17 +118,6 @@ type DeviceCapaOnvifResponse struct {
 // }
 
 // // ===============
-// type DeviceInformationResponseBody struct {
-// 	Response DeviceInformation `xml:"GetDeviceInformationResponse"`
-// }
-
-// type DeviceInformation struct {
-// 	Manufacturer    string `xml:"Manufacturer"`
-// 	Model           string `xml:"Model"`
-// 	FirmwareVersion string `xml:"FirmwareVersion"`
-// 	SerialNumber    string `xml:"SerialNumber"`
-// 	HardwareId      string `xml:"HardwareId"`
-// }
 
 // // ===============
 
