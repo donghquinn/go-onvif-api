@@ -35,11 +35,11 @@ type GetConfigurationResponse struct {
 
 // ======== ITEM
 type GetStatusOnvifResponse struct {
-	Status onvif2.PTZStatus
+	Status onvif2.PTZStatus `json:"status"`
 }
 
 type GetConfigurationOnvifResponse struct {
-	Configuration onvif2.PTZConfiguration
+	Configuration onvif2.PTZConfiguration `json:"configuration"`
 }
 
 // type GetStatusOnvifResponse struct {

@@ -36,77 +36,77 @@ func DeviceConnect(endpoint string) *OnvifDevice {
 	}
 }
 
-func (d *OnvifDevice) GetServiceCapability() (ServiceCapabilities, error) {
+func (d *OnvifDevice) GetServiceCapability() (ServiceCapaOnvifResponse, error) {
 	onvifRes, onvifErr := d.CallMethod(device.GetServiceCapabilities{})
 
 	if onvifErr != nil {
 		log.Printf("[GET_SERVICE_CAPA] Get Device Capability: %v", onvifErr)
-		return ServiceCapabilities{}, onvifErr
+		return ServiceCapaOnvifResponse{}, onvifErr
 	}
 
 	capaBody, readErr := io.ReadAll(onvifRes.Body)
 
 	if readErr != nil {
 		log.Printf("[GET_SERVICE_CAPA] Read Response Error: %v", readErr)
-		return ServiceCapabilities{}, readErr
+		return ServiceCapaOnvifResponse{}, readErr
 	}
 
-	var deviceCapabilities DefaultResponse[ServiceCapabilitiesResponseBody]
+	var deviceCapabilities ServiceCapaOnvifResponse
 
 	if unmarshalErr := xml.Unmarshal(capaBody, &deviceCapabilities); unmarshalErr != nil {
 		log.Printf("[GET_SERVICE_CAPA] Unmarshal Response Error: %v", unmarshalErr)
-		return ServiceCapabilities{}, unmarshalErr
+		return ServiceCapaOnvifResponse{}, unmarshalErr
 	}
 
-	return deviceCapabilities.Body.Response.Capabilities, nil
+	return deviceCapabilities, nil
 }
 
-func (d *OnvifDevice) GetDeviceInfo() (DeviceInformation, error) {
+func (d *OnvifDevice) GetDeviceInfo() (DeviceInfoOnvifResponse, error) {
 	onvifRes, onvifErr := d.CallMethod(device.GetDeviceInformation{})
 
 	if onvifErr != nil {
 		log.Printf("[GET_DEVICE_INFO] Get Device Capability: %v", onvifErr)
-		return DeviceInformation{}, onvifErr
+		return DeviceInfoOnvifResponse{}, onvifErr
 	}
 
 	capaBody, readErr := io.ReadAll(onvifRes.Body)
 
 	if readErr != nil {
 		log.Printf("[GET_DEVICE_INFO] Read Response Error: %v", readErr)
-		return DeviceInformation{}, readErr
+		return DeviceInfoOnvifResponse{}, readErr
 	}
 
-	var deviceCapabilities DefaultResponse[DeviceInformationResponseBody]
+	var deviceCapabilities DeviceInfoOnvifResponse
 
 	if unmarshalErr := xml.Unmarshal(capaBody, &deviceCapabilities); unmarshalErr != nil {
 		log.Printf("[GET_DEVICE_INFO] Unmarshal Response Error: %v", unmarshalErr)
-		return DeviceInformation{}, unmarshalErr
+		return DeviceInfoOnvifResponse{}, unmarshalErr
 	}
 
-	return deviceCapabilities.Body.Response, nil
+	return deviceCapabilities, nil
 }
 
-func (d *OnvifDevice) GetDeviceCapability() (DeviceCapabilitiesType, error) {
+func (d *OnvifDevice) GetDeviceCapability() (DeviceCapaOnvifResponse, error) {
 	onvifRes, onvifErr := d.CallMethod(device.GetCapabilities{Category: "PTZ"})
 
 	if onvifErr != nil {
 		log.Printf("[GET_DEVICE_CAPA] Get Device Capability: %v", onvifErr)
-		return DeviceCapabilitiesType{}, onvifErr
+		return DeviceCapaOnvifResponse{}, onvifErr
 	}
 
 	capaBody, readErr := io.ReadAll(onvifRes.Body)
 
 	if readErr != nil {
 		log.Printf("[GET_SERVICE_CAPA] Read Response Error: %v", readErr)
-		return DeviceCapabilitiesType{}, readErr
+		return DeviceCapaOnvifResponse{}, readErr
 	}
 
-	var deviceCapabilities DefaultResponse[DeviceCapabilitiesResponseBody]
+	var deviceCapabilities DeviceCapaOnvifResponse
 
 	if unmarshalErr := xml.Unmarshal(capaBody, &deviceCapabilities); unmarshalErr != nil {
 		log.Printf("[GET_SERVICE_CAPA] Unmarshal Response Error: %v", unmarshalErr)
-		return DeviceCapabilitiesType{}, unmarshalErr
+		return DeviceCapaOnvifResponse{}, unmarshalErr
 	}
 
-	return deviceCapabilities.Body.Response.Capabilities, nil
+	return deviceCapabilities, nil
 }
