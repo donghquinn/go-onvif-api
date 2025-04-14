@@ -60,7 +60,9 @@ func ContinouseMoveCtl(res http.ResponseWriter, req *http.Request) {
 		})
 		return
 	}
+
 	endpoint, getErr := database.GetDeviceInfo(requestBody.CctvId)
+
 	if getErr != nil {
 		response.Response(res, response.CommonResponseWithMessage{
 			Status:  http.StatusInternalServerError,

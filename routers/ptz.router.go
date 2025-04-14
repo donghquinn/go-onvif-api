@@ -9,4 +9,5 @@ import (
 
 func PtzRouter(server *mux.Router) {
 	server.HandleFunc("/ptz/move/relative", ptz.RelativeMoveCtl).Methods(http.MethodPost)
+	server.HandleFunc("/ptz/move/continous", ptz.ContinouseMoveCtl).Methods(http.MethodPost)
 }
