@@ -90,4 +90,49 @@ func CreateProfileCtl(res http.ResponseWriter, req *http.Request) {
 		Message: "SUCCESS",
 		Result:  profileToken,
 	})
+	return
+}
+
+func GetProfile(res http.ResponseWriter, req *http.Request) {
+	cctvId := req.URL.Query().Get("cctv")
+	profileToken := req.URL.Query().Get("profile")
+
+	if cctvId == "" || profileToken == "" {
+		response.Response(res, GetProfileResponse{
+			Status:  http.StatusBadRequest,
+			Code:    "GPF001",
+			Message: "Invalid Params",
+		})
+
+		return
+	}
+
+	endpoint, getErr := database.GetDeviceInfo(cctvId)
+	if getErr != nil {
+		response.Response(res, GetProfileResponse{
+			Status:  http.StatusInternalServerError,
+			Code:    "GPF002",
+			Message: "Get Device Info Error",
+		})
+		return
+	}
+
+	device := DeviceConnect(endpoint.Endpoint)
+	profileInfo, profileErr := device.GetProfile(profileToken)
+	if profileErr != nil {
+		response.Response(res, GetProfileResponse{
+			Status:  http.StatusInternalServerError,
+			Code:    "GPF003",
+			Message: "Get Profile Error",
+		})
+		return
+	}
+
+	response.Response(res, GetProfileResponse{
+		Status:  http.StatusOK,
+		Code:    "0000",
+		Message: "SUCCESS",
+		Result:  profileInfo,
+	})
+	return
 }

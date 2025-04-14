@@ -2,6 +2,8 @@ package ptz
 
 import (
 	"encoding/xml"
+
+	onvif2 "github.com/use-go/onvif/xsd/onvif"
 )
 
 type CreateUserRequest struct {
@@ -29,6 +31,13 @@ type CreateProfileResponse struct {
 	Result  string `json:"result"`
 }
 
+type GetProfileResponse struct {
+	Status  int            `json:"status"`
+	Code    string         `json:"code"`
+	Message string         `json:"message"`
+	Result  onvif2.Profile `json:"result"`
+}
+
 // ================ USER
 type GetUserResponseBody struct {
 	GetUsersResponse GetUsersResponse `xml:"GetUsersResponse"`
@@ -46,10 +55,6 @@ type User struct {
 // ================ PROFILE
 type GetProfileResponseBody struct {
 	GetProfileResponse GetProfileResponse `xml:"GetProfileResponse"`
-}
-
-type GetProfileResponse struct {
-	Profile Profile `xml:"Profile"`
 }
 
 type Profile struct {
