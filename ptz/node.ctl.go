@@ -3,8 +3,8 @@ package ptz
 import (
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"org.donghyuns.com/onvif/ptz/response"
-	"org.donghyuns.com/onvif/ptz/utils"
 )
 
 func GetNodeListCtl(res http.ResponseWriter, req *http.Request) {
@@ -30,18 +30,20 @@ func GetNodeListCtl(res http.ResponseWriter, req *http.Request) {
 }
 
 func GetNodeDetailCtl(res http.ResponseWriter, req *http.Request) {
-	var requestBody NodeDetailRequest
+	pathVar := mux.Vars(req)
+	nodeProfile := pathVar["nodeProfile"]
+	// var requestBody NodeDetailRequest
 
-	if decodeErr := utils.DecodeBody(req, &requestBody); decodeErr != nil {
-		response.Response(res, NodeDetailResponse{
-			Status:  http.StatusBadRequest,
-			Code:    "NDL001",
-			Message: "Invalid Request",
-		})
-	}
+	// if decodeErr := utils.DecodeBody(req, &requestBody); decodeErr != nil {
+	// 	response.Response(res, NodeDetailResponse{
+	// 		Status:  http.StatusBadRequest,
+	// 		Code:    "NDL001",
+	// 		Message: "Invalid Request",
+	// 	})
+	// }
 
 	device := DeviceConnect("192.168.0.152:10000")
-	nodeData, getErr := device.GetNodeInfo(requestBody.NodeProfile)
+	nodeData, getErr := device.GetNodeInfo(nodeProfile)
 
 	if getErr != nil {
 		response.Response(res, NodeDetailResponse{
