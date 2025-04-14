@@ -5,6 +5,13 @@ import onvif2 "github.com/use-go/onvif/xsd/onvif"
 type GetProfileRequest struct {
 }
 
+type MoveRelativeRequest struct {
+	ProfileToken string  `json:"profileToken"`
+	PanTiltX     float64 `json:"panTiltX"`
+	PanTiltY     float64 `json:"panTiltY"`
+	ZoomX        float64 `json:"zoomX"`
+}
+
 type CreateProfileRequest struct {
 	ProfileName string `json:"profile"`
 }

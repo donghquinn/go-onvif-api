@@ -1,7 +1,12 @@
 package routers
 
-import "github.com/gorilla/mux"
+import (
+	"net/http"
+
+	"github.com/gorilla/mux"
+	"org.donghyuns.com/onvif/ptz/ptz"
+)
 
 func PtzRouter(server *mux.Router) {
-	// server.HandleFunc("/")
+	server.HandleFunc("/ptz/move/relative", ptz.RelativeMoveCtl).Methods(http.MethodPost)
 }

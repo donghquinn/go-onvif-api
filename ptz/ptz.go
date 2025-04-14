@@ -15,17 +15,17 @@ import (
 )
 
 // Move Relative
-func (d *OnvifDevice) MoveRelative(profileToken string, x float64, y float64) error {
+func (d *OnvifDevice) MoveRelative(profileToken string, panTiltX float64, panTiltY float64, zoomX float64) error {
 	onvifRes, onvifErr := d.CallMethod(ptz.RelativeMove{
 		ProfileToken: onvif2.ReferenceToken(profileToken),
 		Translation: onvif2.PTZVector{
 			PanTilt: onvif2.Vector2D{
-				X:     x,
-				Y:     y,
+				X:     panTiltX,
+				Y:     panTiltY,
 				Space: xsd.AnyURI(RelativePanTiltSpace),
 			},
 			Zoom: onvif2.Vector1D{
-				X:     0,
+				X:     zoomX,
 				Space: xsd.AnyURI(RelativeZoomSpace),
 			},
 		},
@@ -37,17 +37,10 @@ func (d *OnvifDevice) MoveRelative(profileToken string, x float64, y float64) er
 	}
 
 	if onvifRes.StatusCode != http.StatusOK {
+		log.Printf("[MOVE_REL] Move Relative Status: %v", onvifRes.StatusCode)
+
 		return fmt.Errorf("move relative response error: %v", onvifRes.StatusCode)
 	}
-
-	ptzBody, readErr := io.ReadAll(onvifRes.Body)
-
-	if readErr != nil {
-		log.Printf("[MOVE_REL] Read Response Error: %v", readErr)
-		return readErr
-	}
-
-	log.Printf("[MOVE_REL] PTZ body Response: %v", string(ptzBody))
 
 	return nil
 }
