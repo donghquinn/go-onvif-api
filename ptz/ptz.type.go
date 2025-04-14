@@ -6,10 +6,22 @@ type GetProfileRequest struct {
 }
 
 type MoveRelativeRequest struct {
+	CctvId       string  `json:"cctvId"`
 	ProfileToken string  `json:"profileToken"`
 	PanTiltX     float64 `json:"panTiltX"`
 	PanTiltY     float64 `json:"panTiltY"`
 	ZoomX        float64 `json:"zoomX"`
+}
+
+type MoveContinousRequest struct {
+	CctvId       string  `json:"cctvId"`
+	ProfileToken string  `json:"profileToken"`
+	PresetToken  string  `json:"presetToken"`
+	PanTiltX     float64 `json:"panTiltX"`
+	PanTiltY     float64 `json:"panTiltY"`
+	ZoomX        float64 `json:"zoomX"`
+	IsAbsolute   bool    `json:"isAbsolute"`
+	Timeout      int     `json:"timeout"` // Second
 }
 
 type CreateProfileRequest struct {
