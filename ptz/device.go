@@ -8,6 +8,8 @@ import (
 
 	"github.com/use-go/onvif"
 	"github.com/use-go/onvif/device"
+	"github.com/use-go/onvif/ptz"
+	onvif2 "github.com/use-go/onvif/xsd/onvif"
 )
 
 type OnvifDevice struct {
@@ -36,77 +38,130 @@ func DeviceConnect(endpoint string) *OnvifDevice {
 	}
 }
 
-func (d *OnvifDevice) GetServiceCapability() (ServiceCapabilities, error) {
+func (d *OnvifDevice) GetServiceCapability() (ServiceCapaOnvifResponse, error) {
 	onvifRes, onvifErr := d.CallMethod(device.GetServiceCapabilities{})
 
 	if onvifErr != nil {
 		log.Printf("[GET_SERVICE_CAPA] Get Device Capability: %v", onvifErr)
-		return ServiceCapabilities{}, onvifErr
+		return ServiceCapaOnvifResponse{}, onvifErr
 	}
 
 	capaBody, readErr := io.ReadAll(onvifRes.Body)
 
 	if readErr != nil {
 		log.Printf("[GET_SERVICE_CAPA] Read Response Error: %v", readErr)
-		return ServiceCapabilities{}, readErr
+		return ServiceCapaOnvifResponse{}, readErr
 	}
 
-	var deviceCapabilities DefaultResponse[ServiceCapabilitiesResponseBody]
+	var deviceCapabilities ServiceCapaOnvifResponse
 
 	if unmarshalErr := xml.Unmarshal(capaBody, &deviceCapabilities); unmarshalErr != nil {
 		log.Printf("[GET_SERVICE_CAPA] Unmarshal Response Error: %v", unmarshalErr)
-		return ServiceCapabilities{}, unmarshalErr
+		return ServiceCapaOnvifResponse{}, unmarshalErr
 	}
 
-	return deviceCapabilities.Body.Response.Capabilities, nil
+	return deviceCapabilities, nil
 }
 
-func (d *OnvifDevice) GetDeviceInfo() (DeviceInformation, error) {
+func (d *OnvifDevice) GetDeviceInfo() (DeviceInformationResponseBody, error) {
 	onvifRes, onvifErr := d.CallMethod(device.GetDeviceInformation{})
 
 	if onvifErr != nil {
 		log.Printf("[GET_DEVICE_INFO] Get Device Capability: %v", onvifErr)
-		return DeviceInformation{}, onvifErr
+		return DeviceInformationResponseBody{}, onvifErr
 	}
 
 	capaBody, readErr := io.ReadAll(onvifRes.Body)
 
 	if readErr != nil {
 		log.Printf("[GET_DEVICE_INFO] Read Response Error: %v", readErr)
-		return DeviceInformation{}, readErr
+		return DeviceInformationResponseBody{}, readErr
 	}
 
 	var deviceCapabilities DefaultResponse[DeviceInformationResponseBody]
 
 	if unmarshalErr := xml.Unmarshal(capaBody, &deviceCapabilities); unmarshalErr != nil {
 		log.Printf("[GET_DEVICE_INFO] Unmarshal Response Error: %v", unmarshalErr)
-		return DeviceInformation{}, unmarshalErr
+		return DeviceInformationResponseBody{}, unmarshalErr
 	}
 
-	return deviceCapabilities.Body.Response, nil
+	return deviceCapabilities.Body, nil
 }
 
-func (d *OnvifDevice) GetDeviceCapability() (DeviceCapabilitiesType, error) {
+func (d *OnvifDevice) GetDeviceCapability() (DeviceCapaOnvifResponse, error) {
 	onvifRes, onvifErr := d.CallMethod(device.GetCapabilities{Category: "PTZ"})
 
 	if onvifErr != nil {
 		log.Printf("[GET_DEVICE_CAPA] Get Device Capability: %v", onvifErr)
-		return DeviceCapabilitiesType{}, onvifErr
+		return DeviceCapaOnvifResponse{}, onvifErr
 	}
 
 	capaBody, readErr := io.ReadAll(onvifRes.Body)
 
 	if readErr != nil {
 		log.Printf("[GET_SERVICE_CAPA] Read Response Error: %v", readErr)
-		return DeviceCapabilitiesType{}, readErr
+		return DeviceCapaOnvifResponse{}, readErr
 	}
 
-	var deviceCapabilities DefaultResponse[DeviceCapabilitiesResponseBody]
+	var deviceCapabilities DeviceCapaOnvifResponse
 
 	if unmarshalErr := xml.Unmarshal(capaBody, &deviceCapabilities); unmarshalErr != nil {
 		log.Printf("[GET_SERVICE_CAPA] Unmarshal Response Error: %v", unmarshalErr)
-		return DeviceCapabilitiesType{}, unmarshalErr
+		return DeviceCapaOnvifResponse{}, unmarshalErr
 	}
 
-	return deviceCapabilities.Body.Response.Capabilities, nil
+	return deviceCapabilities, nil
+}
+
+// 노드 상태 조회
+func (d *OnvifDevice) GetStatus(profileToken string) GetStatusResponse {
+	onvifRes, onvifErr := d.CallMethod(ptz.GetStatus{
+		ProfileToken: onvif2.ReferenceToken(profileToken),
+	})
+
+	if onvifErr != nil {
+		log.Printf("[GET_STATUS] Call Get Preset Method Error: %v", onvifErr)
+		return GetStatusResponse{
+			Status:  http.StatusInternalServerError,
+			Code:    "STA001",
+			Message: "Request Status ONVIF Error",
+		}
+	}
+
+	if onvifRes.StatusCode != http.StatusOK {
+		return GetStatusResponse{
+			Status:  http.StatusInternalServerError,
+			Code:    "STA001",
+			Message: "Request Status ONVIF Error",
+		}
+	}
+
+	ptzBody, readErr := io.ReadAll(onvifRes.Body)
+
+	if readErr != nil {
+		log.Printf("[GET_STATUS] Read Response Error: %v", readErr)
+		return GetStatusResponse{
+			Status:  http.StatusInternalServerError,
+			Code:    "STA002",
+			Message: "Read ONVIF Response Error",
+		}
+	}
+
+	var onvifStatusReponse GetStatusOnvifResponse
+
+	if unmarshal := xml.Unmarshal(ptzBody, &onvifStatusReponse); unmarshal != nil {
+		log.Printf("[GET_STATUS] Unmarshal ONVIF Response Error: %v", unmarshal)
+		return GetStatusResponse{
+			Status:  http.StatusInternalServerError,
+			Code:    "STA003",
+			Message: "Read ONVIF Response Error",
+		}
+	}
+
+	return GetStatusResponse{
+		Status:  http.StatusOK,
+		Code:    "0000",
+		Message: "SUCCESS",
+		Result:  onvifStatusReponse.Status,
+	}
 }

@@ -10,7 +10,7 @@ import (
 	"github.com/use-go/onvif/device"
 	"github.com/use-go/onvif/media"
 	onvif2 "github.com/use-go/onvif/xsd/onvif"
-	"org.donghyuns.com/onvif/ptz/util"
+	"org.donghyuns.com/onvif/ptz/utils"
 )
 
 func (d *OnvifDevice) CreateUser(userName string, userId string, passwd string) error {
@@ -40,7 +40,7 @@ Create Profile
 @Return: Profile Token
 */
 func (d *OnvifDevice) CreateProfile(name string) (string, error) {
-	referenceToken := util.CreateToken()
+	referenceToken := utils.CreateToken()
 
 	onvifRes, onvifErr := d.CallMethod(media.CreateProfile{
 		Name:  onvif2.Name(name),
@@ -60,41 +60,39 @@ func (d *OnvifDevice) CreateProfile(name string) (string, error) {
 	return referenceToken, nil
 }
 
-func (d *OnvifDevice) GetProfile(token string) (Profile, error) {
+func (d *OnvifDevice) GetProfile(token string) (onvif2.Profile, error) {
 	onvifRes, onvifErr := d.CallMethod(media.GetProfile{
 		ProfileToken: onvif2.ReferenceToken(token),
 	})
 
 	if onvifErr != nil {
 		log.Printf("[GET_PROFILE] Create Profile Method Error: %v", onvifErr)
-		return Profile{}, onvifErr
+		return onvif2.Profile{}, onvifErr
 	}
 
 	if onvifRes.StatusCode != http.StatusOK {
 		log.Printf("[GET_PROFILE] Create Profile Status Code Error: %v", onvifErr)
-		return Profile{}, fmt.Errorf("create user response failed. %v", onvifRes.StatusCode)
+		return onvif2.Profile{}, fmt.Errorf("create user response failed. %v", onvifRes.StatusCode)
 	}
 
 	response, readErr := io.ReadAll(onvifRes.Body)
 
 	if readErr != nil {
 		log.Printf("[GET_PROFILE] Create Profile Method Error: %v", onvifErr)
-		return Profile{}, readErr
+		return onvif2.Profile{}, readErr
 	}
 
-	var profileRes DefaultResponse[GetProfileResponseBody]
+	var profileRes onvif2.Profile
 
 	if unmarshal := xml.Unmarshal(response, &profileRes); unmarshal != nil {
 		log.Printf("[GET_PROFILE] Unmarshal Profile: %v", unmarshal)
-		return Profile{}, unmarshal
+		return onvif2.Profile{}, unmarshal
 	}
 
-	log.Printf("[GET_PROFILE] ProfileList Res: %v", profileRes.Body.GetProfileResponse.Profile)
-
-	return profileRes.Body.GetProfileResponse.Profile, nil
+	return profileRes, nil
 }
 
-func (d *OnvifDevice) GetUserList() ([]User, error) {
+func (d *OnvifDevice) GetUserList() ([]onvif2.User, error) {
 	onvifRes, onvifErr := d.CallMethod(device.GetUsers{})
 
 	if onvifErr != nil {
@@ -114,11 +112,11 @@ func (d *OnvifDevice) GetUserList() ([]User, error) {
 		return nil, readErr
 	}
 
-	var userListResponse DefaultResponse[GetUserResponseBody]
+	var userListResponse []onvif2.User
 
 	if marshalErr := xml.Unmarshal(response, &userListResponse); marshalErr != nil {
 		log.Printf("[GET_USER_LIST] Unmarshal XML Error: %v", marshalErr)
 	}
 
-	return userListResponse.Body.GetUsersResponse.User, nil
+	return userListResponse, nil
 }

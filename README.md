@@ -3,7 +3,12 @@
 * It's a example of ONVIF requests and usages 
 
 ## Dependencies
+* 
 * https://github.com/use-go/onvif
+* https://github.com/donghquinn/gdct
+* https://github.com/joho/godotenv 
+* https://github.com/rs/cors
+* https://github.com/gorilla/mux
 
 ## Usage
 

@@ -2,11 +2,40 @@ package ptz
 
 import (
 	"encoding/xml"
+
+	onvif2 "github.com/use-go/onvif/xsd/onvif"
 )
+
+type CreateUserRequest struct {
+	CctvId   string `json:"cctvId"`
+	UserName string `json:"userName"`
+	UserId   string `json:"userId"`
+	Passwd   string `json:"passwd"`
+}
+
+type CreateProfileRequest struct {
+	CctvId      string `json:"cctvId"`
+	ProfileName string `json:"profileName"`
+}
 
 type DefaultResponse[T any] struct {
 	XMLName xml.Name `xml:"Envelope"`
 	Body    T        `xml:"Body"`
+}
+
+// =========== RESPONSE
+type CreateProfileResponse struct {
+	Status  int    `json:"status"`
+	Code    string `json:"code"`
+	Message string `json:"message"`
+	Result  string `json:"result"`
+}
+
+type GetProfileResponse struct {
+	Status  int            `json:"status"`
+	Code    string         `json:"code"`
+	Message string         `json:"message"`
+	Result  onvif2.Profile `json:"result"`
 }
 
 // ================ USER
@@ -26,10 +55,6 @@ type User struct {
 // ================ PROFILE
 type GetProfileResponseBody struct {
 	GetProfileResponse GetProfileResponse `xml:"GetProfileResponse"`
-}
-
-type GetProfileResponse struct {
-	Profile Profile `xml:"Profile"`
 }
 
 type Profile struct {
