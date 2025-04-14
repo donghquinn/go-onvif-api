@@ -7,6 +7,7 @@ import (
 	"org.donghyuns.com/onvif/ptz/utils"
 )
 
+// Get Status
 func GetDeviceStatusCtl(res http.ResponseWriter, req *http.Request) {
 	var requestBody GetStatusRequest
 
@@ -19,13 +20,14 @@ func GetDeviceStatusCtl(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	device := DeviceConnect("192.168.0.152:10000")
+	device := DeviceConnect("192.168.0.152:10000") // TODO DB 조회
 	result := device.GetStatus(requestBody.ProfileToken)
 
 	response.Response(res, result)
 	return
 }
 
+// Get Configuration
 func GetDeviceConfigCtl(res http.ResponseWriter, req *http.Request) {
 	var requestBody GetStatusRequest
 
