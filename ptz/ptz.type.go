@@ -24,10 +24,6 @@ type MoveContinousRequest struct {
 	Timeout      int     `json:"timeout"` // Second
 }
 
-type CreateProfileRequest struct {
-	ProfileName string `json:"profile"`
-}
-
 type GetStatusRequest struct {
 	CctvId       string `json:"cctvId"`
 	ProfileToken string `json:"profileToken"`

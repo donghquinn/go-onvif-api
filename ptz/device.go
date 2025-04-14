@@ -8,6 +8,8 @@ import (
 
 	"github.com/use-go/onvif"
 	"github.com/use-go/onvif/device"
+	"github.com/use-go/onvif/ptz"
+	onvif2 "github.com/use-go/onvif/xsd/onvif"
 )
 
 type OnvifDevice struct {
@@ -109,4 +111,57 @@ func (d *OnvifDevice) GetDeviceCapability() (DeviceCapaOnvifResponse, error) {
 	}
 
 	return deviceCapabilities, nil
+}
+
+// 노드 상태 조회
+func (d *OnvifDevice) GetStatus(profileToken string) GetStatusResponse {
+	onvifRes, onvifErr := d.CallMethod(ptz.GetStatus{
+		ProfileToken: onvif2.ReferenceToken(profileToken),
+	})
+
+	if onvifErr != nil {
+		log.Printf("[GET_STATUS] Call Get Preset Method Error: %v", onvifErr)
+		return GetStatusResponse{
+			Status:  http.StatusInternalServerError,
+			Code:    "STA001",
+			Message: "Request Status ONVIF Error",
+		}
+	}
+
+	if onvifRes.StatusCode != http.StatusOK {
+		return GetStatusResponse{
+			Status:  http.StatusInternalServerError,
+			Code:    "STA001",
+			Message: "Request Status ONVIF Error",
+		}
+	}
+
+	ptzBody, readErr := io.ReadAll(onvifRes.Body)
+
+	if readErr != nil {
+		log.Printf("[GET_STATUS] Read Response Error: %v", readErr)
+		return GetStatusResponse{
+			Status:  http.StatusInternalServerError,
+			Code:    "STA002",
+			Message: "Read ONVIF Response Error",
+		}
+	}
+
+	var onvifStatusReponse GetStatusOnvifResponse
+
+	if unmarshal := xml.Unmarshal(ptzBody, &onvifStatusReponse); unmarshal != nil {
+		log.Printf("[GET_STATUS] Unmarshal ONVIF Response Error: %v", unmarshal)
+		return GetStatusResponse{
+			Status:  http.StatusInternalServerError,
+			Code:    "STA003",
+			Message: "Read ONVIF Response Error",
+		}
+	}
+
+	return GetStatusResponse{
+		Status:  http.StatusOK,
+		Code:    "0000",
+		Message: "SUCCESS",
+		Result:  onvifStatusReponse.Status,
+	}
 }

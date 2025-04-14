@@ -4,6 +4,18 @@ import (
 	"encoding/xml"
 )
 
+type CreateUserRequest struct {
+	CctvId   string `json:"cctvId"`
+	UserName string `json:"userName"`
+	UserId   string `json:"userId"`
+	Passwd   string `json:"passwd"`
+}
+
+type CreateProfileRequest struct {
+	CctvId      string `json:"cctvId"`
+	ProfileName string `json:"profileName"`
+}
+
 type DefaultResponse[T any] struct {
 	XMLName xml.Name `xml:"Envelope"`
 	Body    T        `xml:"Body"`

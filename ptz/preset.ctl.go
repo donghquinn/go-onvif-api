@@ -3,6 +3,7 @@ package ptz
 import (
 	"net/http"
 
+	"org.donghyuns.com/onvif/ptz/database"
 	"org.donghyuns.com/onvif/ptz/response"
 	"org.donghyuns.com/onvif/ptz/utils"
 )
@@ -21,7 +22,18 @@ func SetPresetCtl(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	device := DeviceConnect("192.168.0.152:10000") // TODO DB 조회
+	endpoint, getErr := database.GetDeviceInfo(requestBody.CctvId)
+	if getErr != nil {
+		response.Response(res, response.CommonResponseWithMessage{
+			Status:  http.StatusInternalServerError,
+			Code:    "RMV002",
+			Message: "Get CCTV Endpoint Error",
+		})
+		return
+	}
+
+	device := DeviceConnect(endpoint.Endpoint)
+
 	result := device.SetPreset(requestBody.ProfileToken, requestBody.PresetName)
 
 	if result != nil {

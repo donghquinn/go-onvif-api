@@ -94,7 +94,7 @@ func (d *OnvifDevice) GetProfile(token string) (Profile, error) {
 	return profileRes.Body.GetProfileResponse.Profile, nil
 }
 
-func (d *OnvifDevice) GetUserList() ([]User, error) {
+func (d *OnvifDevice) GetUserList() ([]onvif2.User, error) {
 	onvifRes, onvifErr := d.CallMethod(device.GetUsers{})
 
 	if onvifErr != nil {
@@ -114,11 +114,11 @@ func (d *OnvifDevice) GetUserList() ([]User, error) {
 		return nil, readErr
 	}
 
-	var userListResponse DefaultResponse[GetUserResponseBody]
+	var userListResponse []onvif2.User
 
 	if marshalErr := xml.Unmarshal(response, &userListResponse); marshalErr != nil {
 		log.Printf("[GET_USER_LIST] Unmarshal XML Error: %v", marshalErr)
 	}
 
-	return userListResponse.Body.GetUsersResponse.User, nil
+	return userListResponse, nil
 }

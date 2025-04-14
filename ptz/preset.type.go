@@ -3,11 +3,13 @@ package ptz
 import onvif2 "github.com/use-go/onvif/xsd/onvif"
 
 type SetPresetRequest struct {
+	CctvId       string `json:"cctvId"`
 	ProfileToken string `json:"profileToken"`
 	PresetName   string `json:"presetName"`
 }
 
 type ApplyPresetRequest struct {
+	CctvId       string  `json:"cctvId"`
 	ProfileToken string  `json:"profileToken"`
 	PresetToken  string  `json:"presetToken"`
 	PanTiltX     float64 `json:"panTiltX"`
@@ -17,6 +19,7 @@ type ApplyPresetRequest struct {
 }
 
 type GetPresetListRequest struct {
+	CctvId       string `json:"cctvId"`
 	ProfileToken string `json:"profileToken"`
 }
 
