@@ -8,10 +8,17 @@ import (
 	"github.com/gorilla/mux"
 	"org.donghyuns.com/onvif/ptz/configs"
 	"org.donghyuns.com/onvif/ptz/middlewares"
+	"org.donghyuns.com/onvif/ptz/routers"
 )
 
 func Network() *http.Server {
 	router := mux.NewRouter()
+
+	routers.DeviceRouter(router)
+	routers.NodeRouter(router)
+	routers.PresetRouter(router)
+	routers.PtzRouter(router)
+	routers.UserRouter(router)
 
 	handler := middlewares.CorsHanlder().Handler(router)
 
