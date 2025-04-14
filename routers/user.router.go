@@ -10,4 +10,5 @@ import (
 func UserRouter(server *mux.Router) {
 	server.HandleFunc("/user/create", ptz.CreateUserCtl).Methods(http.MethodPost)
 	server.HandleFunc("/user/create/profile", ptz.CreateProfileCtl).Methods(http.MethodPost)
+	server.HandleFunc("/user/profile", ptz.GetProfile).Methods(http.MethodGet)
 }

@@ -66,7 +66,17 @@ func ApplyPresetCtl(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	device := DeviceConnect("192.168.0.152:10000") // TODO DB 조회
+	endpoint, getErr := database.GetDeviceInfo(requestBody.CctvId)
+	if getErr != nil {
+		response.Response(res, response.CommonResponseWithMessage{
+			Status:  http.StatusInternalServerError,
+			Code:    "RMV002",
+			Message: "Get CCTV Endpoint Error",
+		})
+		return
+	}
+
+	device := DeviceConnect(endpoint.Endpoint) // TODO DB 조회
 	result := device.ApplyPreset(requestBody.ProfileToken, requestBody.PresetToken, requestBody.PanTiltX, requestBody.PanTiltY, requestBody.ZoomX, requestBody.IsAbsolute)
 
 	if result != nil {

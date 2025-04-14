@@ -9,5 +9,5 @@ import (
 
 func NodeRouter(server *mux.Router) {
 	server.HandleFunc("/node/list", ptz.GetNodeListCtl).Methods(http.MethodGet)
-	server.HandleFunc("/node/detail/{nodeProfile}", ptz.GetNodeDetailCtl).Methods(http.MethodGet)
+	server.HandleFunc("/node/detail", ptz.GetNodeDetailCtl).Methods(http.MethodGet)
 }

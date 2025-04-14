@@ -3,12 +3,34 @@ package ptz
 import (
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"org.donghyuns.com/onvif/ptz/database"
 	"org.donghyuns.com/onvif/ptz/response"
 )
 
 func GetNodeListCtl(res http.ResponseWriter, req *http.Request) {
-	device := DeviceConnect("192.168.0.152:10000")
+	cctvId := req.URL.Query().Get("cctv")
+	if cctvId == "" {
+		response.Response(res, GetProfileResponse{
+			Status:  http.StatusBadRequest,
+			Code:    "NDL001",
+			Message: "Invalid Params",
+		})
+
+		return
+	}
+
+	endpoint, getErr := database.GetDeviceInfo(cctvId)
+
+	if getErr != nil {
+		response.Response(res, CreateProfileResponse{
+			Status:  http.StatusInternalServerError,
+			Code:    "NLT002",
+			Message: "Get Device Info Error",
+		})
+		return
+	}
+
+	device := DeviceConnect(endpoint.Endpoint)
 	nodeList, getErr := device.GetNodeList()
 
 	if getErr != nil {
@@ -30,8 +52,29 @@ func GetNodeListCtl(res http.ResponseWriter, req *http.Request) {
 }
 
 func GetNodeDetailCtl(res http.ResponseWriter, req *http.Request) {
-	pathVar := mux.Vars(req)
-	nodeProfile := pathVar["nodeProfile"]
+	cctvId := req.URL.Query().Get("cctv")
+	nodeProfile := req.URL.Query().Get("profile")
+
+	if cctvId == "" || nodeProfile == "" {
+		response.Response(res, GetProfileResponse{
+			Status:  http.StatusBadRequest,
+			Code:    "NDL001",
+			Message: "Invalid Params",
+		})
+
+		return
+	}
+
+	endpoint, getErr := database.GetDeviceInfo(cctvId)
+
+	if getErr != nil {
+		response.Response(res, CreateProfileResponse{
+			Status:  http.StatusInternalServerError,
+			Code:    "NLT002",
+			Message: "Get Device Info Error",
+		})
+		return
+	}
 	// var requestBody NodeDetailRequest
 
 	// if decodeErr := utils.DecodeBody(req, &requestBody); decodeErr != nil {
@@ -42,7 +85,7 @@ func GetNodeDetailCtl(res http.ResponseWriter, req *http.Request) {
 	// 	})
 	// }
 
-	device := DeviceConnect("192.168.0.152:10000")
+	device := DeviceConnect(endpoint.Endpoint)
 	nodeData, getErr := device.GetNodeInfo(nodeProfile)
 
 	if getErr != nil {
