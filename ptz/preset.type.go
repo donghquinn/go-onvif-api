@@ -2,7 +2,7 @@ package ptz
 
 import onvif2 "github.com/use-go/onvif/xsd/onvif"
 
-type CreatePresetRequest struct {
+type SetPresetRequest struct {
 	ProfileToken string `json:"profileToken"`
 	PresetName   string `json:"presetName"`
 }

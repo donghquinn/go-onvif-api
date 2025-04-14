@@ -7,8 +7,9 @@ import (
 	"org.donghyuns.com/onvif/ptz/utils"
 )
 
-func CreatePresetCtl(res http.ResponseWriter, req *http.Request) {
-	var requestBody CreatePresetRequest
+// Set Preset Controller
+func SetPresetCtl(res http.ResponseWriter, req *http.Request) {
+	var requestBody SetPresetRequest
 
 	if decodeErr := utils.DecodeBody(req, &requestBody); decodeErr != nil {
 		response.Response(res, response.CommonResponseWithMessage{
@@ -21,7 +22,7 @@ func CreatePresetCtl(res http.ResponseWriter, req *http.Request) {
 	}
 
 	device := DeviceConnect("192.168.0.152:10000") // TODO DB 조회
-	result := device.CreatePreset(requestBody.ProfileToken, requestBody.PresetName)
+	result := device.SetPreset(requestBody.ProfileToken, requestBody.PresetName)
 
 	if result != nil {
 		response.Response(res, response.CommonResponseWithMessage{
@@ -39,6 +40,7 @@ func CreatePresetCtl(res http.ResponseWriter, req *http.Request) {
 	})
 }
 
+// Apply Preset
 func ApplyPresetCtl(res http.ResponseWriter, req *http.Request) {
 	var requestBody ApplyPresetRequest
 
@@ -71,6 +73,7 @@ func ApplyPresetCtl(res http.ResponseWriter, req *http.Request) {
 	})
 }
 
+// Get Preset List
 func GetPresetListCtl(res http.ResponseWriter, req *http.Request) {
 	var requestBody GetPresetListRequest
 

@@ -13,8 +13,8 @@ import (
 	"org.donghyuns.com/onvif/ptz/utils"
 )
 
-// Create Preset
-func (d *OnvifDevice) CreatePreset(profileToken, presetName string) error {
+// Set Preset - 현 위치를 프리셋으로 저장
+func (d *OnvifDevice) SetPreset(profileToken, presetName string) error {
 	presetToken := utils.CreateToken()
 
 	onvifRes, onvifErr := d.CallMethod(ptz.SetPreset{
