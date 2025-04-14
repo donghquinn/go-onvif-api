@@ -3,7 +3,6 @@ package ptz
 import (
 	"net/http"
 
-	"github.com/gorilla/mux"
 	"org.donghyuns.com/onvif/ptz/database"
 	"org.donghyuns.com/onvif/ptz/response"
 )
@@ -99,9 +98,28 @@ func GetDeviceStatusCtl(res http.ResponseWriter, req *http.Request) {
 
 // Get Configuration
 func GetDeviceConfigCtl(res http.ResponseWriter, req *http.Request) {
-	pathVar := mux.Vars(req)
-	profileToken := pathVar["profileToken"]
+	cctvId := req.URL.Query().Get("cctv")
+	profileToken := req.URL.Query().Get("profile")
 
+	if cctvId == "" || profileToken == "" {
+		response.Response(res, GetProfileResponse{
+			Status:  http.StatusBadRequest,
+			Code:    "COF001",
+			Message: "Invalid Params",
+		})
+
+		return
+	}
+
+	endpoint, getErr := database.GetDeviceInfo(cctvId)
+	if getErr != nil {
+		response.Response(res, GetProfileResponse{
+			Status:  http.StatusInternalServerError,
+			Code:    "COF002",
+			Message: "Get Device Info Error",
+		})
+		return
+	}
 	// var requestBody GetStatusRequest
 
 	// if unmarshalErr := utils.DecodeBody(req, requestBody); unmarshalErr != nil {
@@ -113,7 +131,7 @@ func GetDeviceConfigCtl(res http.ResponseWriter, req *http.Request) {
 	// 	return
 	// }
 
-	device := DeviceConnect("192.168.0.152:10000")
+	device := DeviceConnect(endpoint.Endpoint)
 	result := device.GetConfiguration(profileToken)
 
 	response.Response(res, result)
