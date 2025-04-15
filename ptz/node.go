@@ -7,58 +7,59 @@ import (
 
 	"github.com/use-go/onvif/ptz"
 	"github.com/use-go/onvif/xsd/onvif"
-
-	onvif2 "github.com/use-go/onvif/xsd/onvif"
 )
 
-func (d *OnvifDevice) GetNodeList() ([]onvif2.PTZNode, error) {
+func (d *OnvifDevice) GetNodeList() ([]PTZNode, error) {
+	var responseBody DefaultResponse[GetNodeListResponseBodyContent]
+
 	onvifRes, onvifErr := d.CallMethod(ptz.GetNodes{})
 
 	if onvifErr != nil {
 		log.Printf("[GET_NODE_LIST] Call Get Node List Method Error: %v", onvifErr)
-		return nil, onvifErr
+		return []PTZNode{}, onvifErr
 	}
 
 	ptzBody, readErr := io.ReadAll(onvifRes.Body)
 
 	if readErr != nil {
 		log.Printf("[GET_NODE_LIST] Read Response Error: %v", readErr)
-		return nil, readErr
+		return []PTZNode{}, readErr
 	}
 
-	var responseBody []onvif2.PTZNode
+	log.Printf("asdcads: %v", string(ptzBody))
 
 	if unmarshalErr := xml.Unmarshal(ptzBody, &responseBody); unmarshalErr != nil {
 		log.Printf("[GET_NODE_LIST] Unmarshal Error: %v", unmarshalErr)
-		return nil, unmarshalErr
+		return []PTZNode{}, unmarshalErr
 	}
 
-	return responseBody, nil
+	return responseBody.Body.GetNodesResponse.Node, nil
 }
 
-func (d *OnvifDevice) GetNodeInfo(nodeToken string) (onvif2.PTZNode, error) {
+func (d *OnvifDevice) GetNodeInfo(nodeToken string) (PTZNode, error) {
 	onvifRes, onvifErr := d.CallMethod(ptz.GetNode{
 		NodeToken: onvif.ReferenceToken(nodeToken),
 	})
 
 	if onvifErr != nil {
 		log.Printf("[GET_NODE] Call Get Node Method Error: %v", onvifErr)
-		return onvif2.PTZNode{}, onvifErr
+		return PTZNode{}, onvifErr
 	}
 
 	ptzBody, readErr := io.ReadAll(onvifRes.Body)
 
 	if readErr != nil {
 		log.Printf("[GET_NODE] Read Response Error: %v", readErr)
-		return onvif2.PTZNode{}, readErr
+		return PTZNode{}, readErr
 	}
 
-	var responseBody onvif2.PTZNode
+	log.Printf("asdcads: %v", string(ptzBody))
+	var responseBody DefaultResponse[GetNodeResponseBody]
 
 	if unmarshalErr := xml.Unmarshal(ptzBody, &responseBody); unmarshalErr != nil {
 		log.Printf("[GET_NODE] Unmarshal Error: %v", unmarshalErr)
-		return onvif2.PTZNode{}, unmarshalErr
+		return PTZNode{}, unmarshalErr
 	}
 
-	return responseBody, nil
+	return responseBody.Body.GetNodeResponse.Node, nil
 }

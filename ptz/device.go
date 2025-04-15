@@ -38,31 +38,33 @@ func DeviceConnect(endpoint string) *OnvifDevice {
 	}
 }
 
-func (d *OnvifDevice) GetServiceCapability() (ServiceCapaOnvifResponse, error) {
+func (d *OnvifDevice) GetServiceCapability() (ServiceCapabilities, error) {
 	onvifRes, onvifErr := d.CallMethod(device.GetServiceCapabilities{})
 
 	if onvifErr != nil {
 		log.Printf("[GET_SERVICE_CAPA] Get Device Capability: %v", onvifErr)
-		return ServiceCapaOnvifResponse{}, onvifErr
+		return ServiceCapabilities{}, onvifErr
 	}
 
 	capaBody, readErr := io.ReadAll(onvifRes.Body)
 
 	if readErr != nil {
 		log.Printf("[GET_SERVICE_CAPA] Read Response Error: %v", readErr)
-		return ServiceCapaOnvifResponse{}, readErr
+		return ServiceCapabilities{}, readErr
 	}
 
-	var deviceCapabilities ServiceCapaOnvifResponse
+	log.Printf("asdcasdcsa: %v", string(capaBody))
+	var deviceCapabilities DefaultResponse[ServiceCapabilitiesResponseBody]
 
 	if unmarshalErr := xml.Unmarshal(capaBody, &deviceCapabilities); unmarshalErr != nil {
 		log.Printf("[GET_SERVICE_CAPA] Unmarshal Response Error: %v", unmarshalErr)
-		return ServiceCapaOnvifResponse{}, unmarshalErr
+		return ServiceCapabilities{}, unmarshalErr
 	}
 
-	return deviceCapabilities, nil
+	return deviceCapabilities.Body.Response.Capabilities, nil
 }
 
+// 디바이스 정보 조회
 func (d *OnvifDevice) GetDeviceInfo() (DeviceInformationResponseBody, error) {
 	onvifRes, onvifErr := d.CallMethod(device.GetDeviceInformation{})
 
@@ -88,29 +90,30 @@ func (d *OnvifDevice) GetDeviceInfo() (DeviceInformationResponseBody, error) {
 	return deviceCapabilities.Body, nil
 }
 
-func (d *OnvifDevice) GetDeviceCapability() (DeviceCapaOnvifResponse, error) {
+// 디바이스 캐파 조회
+func (d *OnvifDevice) GetDeviceCapability() (ServiceCapabilities, error) {
 	onvifRes, onvifErr := d.CallMethod(device.GetCapabilities{Category: "PTZ"})
 
 	if onvifErr != nil {
 		log.Printf("[GET_DEVICE_CAPA] Get Device Capability: %v", onvifErr)
-		return DeviceCapaOnvifResponse{}, onvifErr
+		return ServiceCapabilities{}, onvifErr
 	}
 
 	capaBody, readErr := io.ReadAll(onvifRes.Body)
 
 	if readErr != nil {
 		log.Printf("[GET_SERVICE_CAPA] Read Response Error: %v", readErr)
-		return DeviceCapaOnvifResponse{}, readErr
+		return ServiceCapabilities{}, readErr
 	}
 
-	var deviceCapabilities DeviceCapaOnvifResponse
+	var deviceCapabilities DefaultResponse[ServiceCapaOnvifResponse]
 
 	if unmarshalErr := xml.Unmarshal(capaBody, &deviceCapabilities); unmarshalErr != nil {
 		log.Printf("[GET_SERVICE_CAPA] Unmarshal Response Error: %v", unmarshalErr)
-		return DeviceCapaOnvifResponse{}, unmarshalErr
+		return ServiceCapabilities{}, unmarshalErr
 	}
 
-	return deviceCapabilities, nil
+	return deviceCapabilities.Body.Capabilities.Capabilities, nil
 }
 
 // 노드 상태 조회
@@ -147,7 +150,7 @@ func (d *OnvifDevice) GetStatus(profileToken string) GetStatusResponse {
 		}
 	}
 
-	var onvifStatusReponse GetStatusOnvifResponse
+	var onvifStatusReponse DefaultResponse[GetStatusOnvifResponse]
 
 	if unmarshal := xml.Unmarshal(ptzBody, &onvifStatusReponse); unmarshal != nil {
 		log.Printf("[GET_STATUS] Unmarshal ONVIF Response Error: %v", unmarshal)
@@ -162,6 +165,6 @@ func (d *OnvifDevice) GetStatus(profileToken string) GetStatusResponse {
 		Status:  http.StatusOK,
 		Code:    "0000",
 		Message: "SUCCESS",
-		Result:  onvifStatusReponse.Status,
+		Result:  onvifStatusReponse.Body.GetStatusResponse,
 	}
 }

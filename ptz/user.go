@@ -60,39 +60,39 @@ func (d *OnvifDevice) CreateProfile(name string) (string, error) {
 	return referenceToken, nil
 }
 
-func (d *OnvifDevice) GetProfile(token string) (onvif2.Profile, error) {
+func (d *OnvifDevice) GetProfile(token string) (Profile, error) {
 	onvifRes, onvifErr := d.CallMethod(media.GetProfile{
 		ProfileToken: onvif2.ReferenceToken(token),
 	})
 
 	if onvifErr != nil {
 		log.Printf("[GET_PROFILE] Create Profile Method Error: %v", onvifErr)
-		return onvif2.Profile{}, onvifErr
+		return Profile{}, onvifErr
 	}
 
 	if onvifRes.StatusCode != http.StatusOK {
 		log.Printf("[GET_PROFILE] Create Profile Status Code Error: %v", onvifErr)
-		return onvif2.Profile{}, fmt.Errorf("create user response failed. %v", onvifRes.StatusCode)
+		return Profile{}, fmt.Errorf("create user response failed. %v", onvifRes.StatusCode)
 	}
 
 	response, readErr := io.ReadAll(onvifRes.Body)
 
 	if readErr != nil {
 		log.Printf("[GET_PROFILE] Create Profile Method Error: %v", onvifErr)
-		return onvif2.Profile{}, readErr
+		return Profile{}, readErr
 	}
 
-	var profileRes onvif2.Profile
+	var profileRes DefaultResponse[GetProfileResponseBody]
 
 	if unmarshal := xml.Unmarshal(response, &profileRes); unmarshal != nil {
 		log.Printf("[GET_PROFILE] Unmarshal Profile: %v", unmarshal)
-		return onvif2.Profile{}, unmarshal
+		return Profile{}, unmarshal
 	}
 
-	return profileRes, nil
+	return profileRes.Body.GetProfileResponse, nil
 }
 
-func (d *OnvifDevice) GetUserList() ([]onvif2.User, error) {
+func (d *OnvifDevice) GetUserList() ([]UserResponseItem, error) {
 	onvifRes, onvifErr := d.CallMethod(device.GetUsers{})
 
 	if onvifErr != nil {
@@ -112,11 +112,11 @@ func (d *OnvifDevice) GetUserList() ([]onvif2.User, error) {
 		return nil, readErr
 	}
 
-	var userListResponse []onvif2.User
+	var userListResponse DefaultResponse[GetUserOnvifListResponse]
 
 	if marshalErr := xml.Unmarshal(response, &userListResponse); marshalErr != nil {
 		log.Printf("[GET_USER_LIST] Unmarshal XML Error: %v", marshalErr)
 	}
 
-	return userListResponse, nil
+	return userListResponse.Body.User, nil
 }

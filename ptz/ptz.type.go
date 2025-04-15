@@ -5,6 +5,20 @@ import onvif2 "github.com/use-go/onvif/xsd/onvif"
 type GetProfileRequest struct {
 }
 
+type SetDefaultPositionRequest struct {
+	CctvId       string `json:"cctvId"`
+	ProfileToken string `json:"profileToken"`
+}
+
+type MoveToDefaultPositionRequest struct {
+	CctvId       string  `json:"cctvId"`
+	ProfileToken string  `json:"profileToken"`
+	PanTiltX     float64 `json:"panTiltX"` // 아마 기존 위치로 돌아갈 때 x값 변화량인듯
+	PanTiltY     float64 `json:"panTiltY"` // 아마 기존 위치로 돌아갈 때 y값 변화량인듯
+	ZoomX        float64 `json:"zoomX"`    // 아마 기존 위치로 돌아갈 때 zoom의 x값 변화량인듯
+	IsAbsolute   bool    `json:"isAbsolute"`
+}
+
 type MoveRelativeRequest struct {
 	CctvId       string  `json:"cctvId"`
 	ProfileToken string  `json:"profileToken"`
@@ -16,7 +30,6 @@ type MoveRelativeRequest struct {
 type MoveContinousRequest struct {
 	CctvId       string  `json:"cctvId"`
 	ProfileToken string  `json:"profileToken"`
-	PresetToken  string  `json:"presetToken"`
 	PanTiltX     float64 `json:"panTiltX"`
 	PanTiltY     float64 `json:"panTiltY"`
 	ZoomX        float64 `json:"zoomX"`
@@ -35,10 +48,10 @@ type GetConfigurationRequest struct {
 
 // ======= RESPONSE
 type GetStatusResponse struct {
-	Status  int              `json:"status"`
-	Code    string           `json:"code"`
-	Message string           `json:"message"`
-	Result  onvif2.PTZStatus `json:"result"`
+	Status  int           `json:"status"`
+	Code    string        `json:"code"`
+	Message string        `json:"message"`
+	Result  GetStatusItem `json:"result"`
 }
 
 type GetConfigurationResponse struct {
@@ -49,58 +62,37 @@ type GetConfigurationResponse struct {
 }
 
 // ======== ITEM
-type GetStatusOnvifResponse struct {
-	Status onvif2.PTZStatus `json:"status"`
-}
-
 type GetConfigurationOnvifResponse struct {
 	Configuration onvif2.PTZConfiguration `json:"configuration"`
 }
 
-// type GetStatusOnvifResponse struct {
-// 	GetStatusResponse GetStatusItem `xml:"GetStatusResponse"`
-// }
+type GetStatusOnvifResponse struct {
+	GetStatusResponse GetStatusItem `xml:"GetStatusResponse>PTZStatus"`
+}
 
-// type PTZStatusItem struct {
-// 	PTZStatus GetStatusItem `xml:"PTZStatus"`
-// }
+type GetStatusItem struct {
+	Position   PositionItem   `xml:"Position"`
+	MoveStatus MoveStatusItem `xml:"MoveStatus"`
+	UtcTime    string         `xml:"UtcTime"`
+}
 
-// type GetStatusItem struct {
-// 	Position   PositionItem   `xml:"Position"`
-// 	MoveStatus MoveStatusItem `xml:"MoveStatus"`
-// 	UtcTime    string         `xml:"UtcTime"`
-// }
+type PositionItem struct {
+	PanTilt PanTiltItem `xml:"PanTilt"`
+	Zoom    ZoomItem    `xml:"Zoom"`
+}
 
-// type PositionItem struct {
-// 	PanTilt PanTiltItem `xml:"PanTilt"`
-// 	Zoom    ZoomItem    `xml:"Zoom"`
-// }
+type MoveStatusItem struct {
+	PanTilt string `xml:"PanTilt"`
+	Zoom    string `xml:"Zoom"`
+}
 
-// type MoveStatusItem struct {
-// 	PanTilt string `xml:"PanTilt"`
-// 	Zoom    string `xml:"Zoom"`
-// }
+type ZoomItem struct {
+	X     float64 `xml:"x,attr"`
+	Space string  `xml:"space,attr"`
+}
 
-// type ZoomItem struct {
-// 	X     string `xml:"x"`
-// 	Space string `xml:"space"`
-// }
-
-// type PanTiltItem struct {
-// 	X     string `xml:"x"`
-// 	Y     string `xml:"y"`
-// 	Space string `xml:"space"`
-// }
-
-// type DefaultResponse struct {
-// 	Body GetUserListResponse `xml:"s:Body"`
-// }
-
-// type GetUserListResponse struct {
-// 	User []UserResponseItem `xml:"tds:GetUsersResponse"`
-// }
-
-// type UserResponseItem struct {
-// 	UserName  string `xml:"tt:UserName"`
-// 	UserLevel string `xml:"tt:UserLevel"`
-// }
+type PanTiltItem struct {
+	X     float64 `xml:"x,attr"`
+	Y     float64 `xml:"y,attr"`
+	Space string  `xml:"space,attr"`
+}

@@ -36,6 +36,11 @@ func (d *OnvifDevice) MoveRelative(profileToken string, panTiltX float64, panTil
 		return onvifErr
 	}
 
+	// bodyRead, readErr := io.ReadAll(onvifRes.Body)
+	// if readErr != nil {
+	// 	return readErr
+	// }
+
 	if onvifRes.StatusCode != http.StatusOK {
 		log.Printf("[MOVE_REL] Move Relative Status: %v", onvifRes.StatusCode)
 
@@ -48,7 +53,6 @@ func (d *OnvifDevice) MoveRelative(profileToken string, panTiltX float64, panTil
 // 지속 이동
 func (d *OnvifDevice) MoveContinuous(
 	profileToken string,
-	presetToken string,
 	panTiltX float64,
 	pantiltY float64,
 	zoomX float64,
@@ -119,7 +123,11 @@ func (d *OnvifDevice) GetConfiguration(profileToken string) GetConfigurationResp
 
 	if readErr != nil {
 		log.Printf("[GET_CONFIG] Read Response Error: %v", readErr)
-		// return nil, readErr
+		return GetConfigurationResponse{
+			Status:  http.StatusInternalServerError,
+			Code:    "STA004",
+			Message: "Read ONVIF Response Error",
+		}
 	}
 
 	var configurationResponse GetConfigurationOnvifResponse
@@ -128,12 +136,11 @@ func (d *OnvifDevice) GetConfiguration(profileToken string) GetConfigurationResp
 		log.Printf("[GET_STATUS] Unmarshal ONVIF Response Error: %v", unmarshal)
 		return GetConfigurationResponse{
 			Status:  http.StatusInternalServerError,
-			Code:    "STA003",
+			Code:    "STA005",
 			Message: "Read ONVIF Response Error",
 		}
 	}
 
-	log.Printf("adcd: %v", string(ptzBody))
 	return GetConfigurationResponse{
 		Status:  http.StatusOK,
 		Code:    "0000",

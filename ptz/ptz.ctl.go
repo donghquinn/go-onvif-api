@@ -75,7 +75,6 @@ func ContinouseMoveCtl(res http.ResponseWriter, req *http.Request) {
 	device := DeviceConnect(endpoint.Endpoint)
 	if moveErr := device.MoveContinuous(
 		requestBody.ProfileToken,
-		requestBody.PresetToken,
 		requestBody.PanTiltX,
 		requestBody.PanTiltY,
 		requestBody.ZoomX,
@@ -96,5 +95,87 @@ func ContinouseMoveCtl(res http.ResponseWriter, req *http.Request) {
 		Message: "SUCCESS",
 	})
 
+	return
+}
+
+func SetDefaultPositionCtl(res http.ResponseWriter, req *http.Request) {
+	var requestBody SetDefaultPositionRequest
+
+	if unmarshalErr := utils.DecodeBody(req, &requestBody); unmarshalErr != nil {
+		response.Response(res, response.CommonResponseWithMessage{
+			Status:  http.StatusBadRequest,
+			Code:    "SDP001",
+			Message: "Invalid Request",
+		})
+		return
+	}
+
+	endpoint, getErr := database.GetDeviceInfo(requestBody.CctvId)
+
+	if getErr != nil {
+		response.Response(res, response.CommonResponseWithMessage{
+			Status:  http.StatusInternalServerError,
+			Code:    "SDP002",
+			Message: "Get CCTV Endpoint Error",
+		})
+		return
+	}
+
+	device := DeviceConnect(endpoint.Endpoint)
+	if setErr := device.CreateDefaultPosition(requestBody.ProfileToken); setErr != nil {
+		response.Response(res, response.CommonResponseWithMessage{
+			Status:  http.StatusInternalServerError,
+			Code:    "SDP003",
+			Message: "Set Default Position Error",
+		})
+		return
+	}
+
+	response.Response(res, response.CommonResponseWithMessage{
+		Status:  http.StatusOK,
+		Code:    "0000",
+		Message: "SUCCESS",
+	})
+	return
+}
+
+func MoveToDefaultPositionCtl(res http.ResponseWriter, req *http.Request) {
+	var requestBody MoveToDefaultPositionRequest
+
+	if unmarshalErr := utils.DecodeBody(req, &requestBody); unmarshalErr != nil {
+		response.Response(res, response.CommonResponseWithMessage{
+			Status:  http.StatusBadRequest,
+			Code:    "MTD001",
+			Message: "Invalid Request",
+		})
+		return
+	}
+
+	endpoint, getErr := database.GetDeviceInfo(requestBody.CctvId)
+
+	if getErr != nil {
+		response.Response(res, response.CommonResponseWithMessage{
+			Status:  http.StatusInternalServerError,
+			Code:    "MTD002",
+			Message: "Get CCTV Endpoint Error",
+		})
+		return
+	}
+
+	device := DeviceConnect(endpoint.Endpoint)
+	if moveErr := device.GoToDefaultPosition(requestBody.ProfileToken, requestBody.PanTiltX, requestBody.PanTiltY, requestBody.ZoomX, requestBody.IsAbsolute); moveErr != nil {
+		response.Response(res, response.CommonResponseWithMessage{
+			Status:  http.StatusInternalServerError,
+			Code:    "MTD003",
+			Message: "Move to Default Position Error",
+		})
+		return
+	}
+
+	response.Response(res, response.CommonResponseWithMessage{
+		Status:  http.StatusOK,
+		Code:    "0000",
+		Message: "SUCCESS",
+	})
 	return
 }
