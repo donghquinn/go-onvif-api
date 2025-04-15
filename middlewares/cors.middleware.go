@@ -7,12 +7,9 @@ import (
 )
 
 var originList = []string{
-	"http://localhost:3000",
-	"http://localhost:9852",
-	"https://toonizia.local",
-	"https://www.toonizia.com",
-	"https://toonizia.donghyuns.com",
-	"unknown",
+	"https://itscontrol.local",
+	"https://its-control-dev.zetra.kr",
+	"https://onvif-api-dev.zetra.kr",
 }
 
 func CorsHanlder() *cors.Cors {

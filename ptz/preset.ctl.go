@@ -34,7 +34,7 @@ func SetPresetCtl(res http.ResponseWriter, req *http.Request) {
 
 	device := DeviceConnect(endpoint.Endpoint)
 
-	result := device.SetPreset(requestBody.ProfileToken, requestBody.PresetName)
+	presetToken, result := device.SetPreset(requestBody.ProfileToken, requestBody.PresetName)
 
 	if result != nil {
 		response.Response(res, response.CommonResponseWithMessage{
@@ -45,10 +45,11 @@ func SetPresetCtl(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	response.Response(res, response.CommonResponseWithMessage{
+	response.Response(res, SetPresetResponse{
 		Status:  http.StatusOK,
 		Code:    "0000",
 		Message: "SUCCESS",
+		Result:  presetToken,
 	})
 }
 
@@ -97,19 +98,30 @@ func ApplyPresetCtl(res http.ResponseWriter, req *http.Request) {
 
 // Get Preset List
 func GetPresetListCtl(res http.ResponseWriter, req *http.Request) {
-	var requestBody GetPresetListRequest
+	// var requestBody GetPresetListRequest
 
-	if decodeErr := utils.DecodeBody(req, &requestBody); decodeErr != nil {
-		response.Response(res, PresetListResponse{
+	// if decodeErr := utils.DecodeBody(req, &requestBody); decodeErr != nil {
+	// 	response.Response(res, PresetListResponse{
+	// 		Status:  http.StatusBadRequest,
+	// 		Code:    "APT001",
+	// 		Message: "Invalid Request",
+	// 	})
+
+	// 	return
+	// }
+	cctvId := req.URL.Query().Get("cctv")
+	profileToken := req.URL.Query().Get("profile")
+	if cctvId == "" || profileToken == "" {
+		response.Response(res, response.CommonResponseWithMessage{
 			Status:  http.StatusBadRequest,
-			Code:    "APT001",
-			Message: "Invalid Request",
+			Code:    "RMV002",
+			Message: "Invalid Params",
 		})
 
 		return
 	}
 
-	endpoint, getErr := database.GetDeviceInfo(requestBody.CctvId)
+	endpoint, getErr := database.GetDeviceInfo(cctvId)
 	if getErr != nil {
 		response.Response(res, response.CommonResponseWithMessage{
 			Status:  http.StatusInternalServerError,
@@ -120,15 +132,19 @@ func GetPresetListCtl(res http.ResponseWriter, req *http.Request) {
 	}
 
 	device := DeviceConnect(endpoint.Endpoint) // TODO DB 조회
-	result, getErr := device.GetPresetList(requestBody.ProfileToken)
+	result, getErr := device.GetPresetList(profileToken)
 
 	if getErr != nil {
-		response.Response(res, PresetListResponse{
+		response.Response(res, response.CommonResponseWithMessage{
 			Status:  http.StatusInternalServerError,
 			Code:    "APT002",
 			Message: "Get Preset List Error",
 		})
 		return
+	}
+
+	if result == nil || len(result) == 0 {
+		result = []Preset{}
 	}
 
 	response.Response(res, PresetListResponse{

@@ -12,10 +12,14 @@ import (
 	"github.com/joho/godotenv"
 	"org.donghyuns.com/onvif/ptz/configs"
 	"org.donghyuns.com/onvif/ptz/network"
+	"org.donghyuns.com/onvif/ptz/utils"
 )
 
 func main() {
 	godotenv.Load(".env")
+
+	setEnv()
+	go utils.ScheduleLogRotation()
 
 	server := network.Network()
 
@@ -48,4 +52,9 @@ func main() {
 	}
 
 	log.Println("Server Has been Shutdown Gracefully")
+}
+
+func setEnv() {
+	configs.SetGlobalConfig()
+	configs.SetDatabaseConfig()
 }

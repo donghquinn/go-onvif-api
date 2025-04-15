@@ -10,12 +10,14 @@ func GetDeviceInfo(cctvId string) (DeviceInfo, error) {
 
 	dbConfig := configs.DatabaseConfig
 
+	sslMode := "disable"
 	conn, dbErr := gdct.InitPostgresConnection(gdct.DBConfig{
 		Host:     dbConfig.Host,
 		Port:     dbConfig.Port,
 		UserName: dbConfig.User,
 		Password: dbConfig.Passwd,
 		Database: dbConfig.Database,
+		SslMode:  &sslMode,
 	})
 
 	if dbErr != nil {
