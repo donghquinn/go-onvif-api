@@ -3,7 +3,7 @@ package main_test
 import (
 	"testing"
 
-	"org.donghyuns.com/onvif/ptz/ptz"
+	"org.donghyuns.com/onvif/ptz/pkg/ptz"
 )
 
 func TestCreateUser(t *testing.T) {

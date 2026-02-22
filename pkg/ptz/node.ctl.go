@@ -3,8 +3,8 @@ package ptz
 import (
 	"net/http"
 
-	"org.donghyuns.com/onvif/ptz/database"
-	"org.donghyuns.com/onvif/ptz/response"
+	"org.donghyuns.com/onvif/ptz/internal/response"
+	"org.donghyuns.com/onvif/ptz/pkg/database"
 )
 
 func GetNodeListCtl(res http.ResponseWriter, req *http.Request) {

@@ -3,8 +3,8 @@ package database
 import (
 	"net/http"
 
-	"org.donghyuns.com/onvif/ptz/response"
-	"org.donghyuns.com/onvif/ptz/utils"
+	"org.donghyuns.com/onvif/ptz/internal/response"
+	"org.donghyuns.com/onvif/ptz/internal/utils"
 )
 
 func GetDeviceInfoCtl(res http.ResponseWriter, req *http.Request) {

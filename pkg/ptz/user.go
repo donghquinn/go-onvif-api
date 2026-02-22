@@ -10,7 +10,7 @@ import (
 	"github.com/use-go/onvif/device"
 	"github.com/use-go/onvif/media"
 	onvif2 "github.com/use-go/onvif/xsd/onvif"
-	"org.donghyuns.com/onvif/ptz/utils"
+	"org.donghyuns.com/onvif/ptz/internal/utils"
 )
 
 func (d *OnvifDevice) CreateUser(userName string, userId string, passwd string) error {

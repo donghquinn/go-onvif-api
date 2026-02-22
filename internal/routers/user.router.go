@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"org.donghyuns.com/onvif/ptz/ptz"
+	"org.donghyuns.com/onvif/ptz/pkg/ptz"
 )
 
 func UserRouter(server *mux.Router) {

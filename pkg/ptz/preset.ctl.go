@@ -3,9 +3,9 @@ package ptz
 import (
 	"net/http"
 
-	"org.donghyuns.com/onvif/ptz/database"
-	"org.donghyuns.com/onvif/ptz/response"
-	"org.donghyuns.com/onvif/ptz/utils"
+	"org.donghyuns.com/onvif/ptz/internal/response"
+	"org.donghyuns.com/onvif/ptz/internal/utils"
+	"org.donghyuns.com/onvif/ptz/pkg/database"
 )
 
 // Set Preset Controller

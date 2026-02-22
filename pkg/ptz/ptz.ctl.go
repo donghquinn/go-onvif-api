@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"time"
 
-	"org.donghyuns.com/onvif/ptz/database"
-	"org.donghyuns.com/onvif/ptz/response"
-	"org.donghyuns.com/onvif/ptz/utils"
+	"org.donghyuns.com/onvif/ptz/internal/response"
+	"org.donghyuns.com/onvif/ptz/internal/utils"
+	"org.donghyuns.com/onvif/ptz/pkg/database"
 )
 
 func RelativeMoveCtl(res http.ResponseWriter, req *http.Request) {

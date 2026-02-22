@@ -7,8 +7,8 @@ import (
 
 	"github.com/gorilla/mux"
 	"org.donghyuns.com/onvif/ptz/configs"
-	"org.donghyuns.com/onvif/ptz/middlewares"
-	"org.donghyuns.com/onvif/ptz/routers"
+	"org.donghyuns.com/onvif/ptz/internal/middlewares"
+	"org.donghyuns.com/onvif/ptz/internal/routers"
 )
 
 func Network() *http.Server {
