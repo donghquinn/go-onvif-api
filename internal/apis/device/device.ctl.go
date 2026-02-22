@@ -70,7 +70,6 @@ func (d *DeviceCtlService) GetServiceCapaCtl(res http.ResponseWriter, req *http.
 		Message: "SUCCESS",
 		Result:  result,
 	})
-	return
 }
 
 // Get Device Info
@@ -120,7 +119,6 @@ func (d *DeviceCtlService) GetDeviceInfoCtl(res http.ResponseWriter, req *http.R
 		Message: "SUCCESS",
 		Result:  result.Response,
 	})
-	return
 }
 
 // Get Status
@@ -163,7 +161,6 @@ func (d *DeviceCtlService) GetDeviceStatusCtl(res http.ResponseWriter, req *http
 	result := device.GetStatus(profileToken)
 
 	response.Response(res, result.Status, result)
-	return
 }
 
 // Get Configuration
@@ -205,5 +202,4 @@ func (d *DeviceCtlService) GetDeviceConfigCtl(res http.ResponseWriter, req *http
 	result := device.GetConfiguration(profileToken)
 
 	response.Response(res, result.Status, result)
-	return
 }
