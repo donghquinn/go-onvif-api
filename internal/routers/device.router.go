@@ -4,12 +4,14 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"org.donghyuns.com/onvif/ptz/pkg/ptz"
+	deviceapi "org.donghyuns.com/onvif/ptz/internal/apis/device"
 )
 
 func DeviceRouter(server *mux.Router) {
-	server.HandleFunc("/device/service/capa", ptz.GetServiceCapaCtl).Methods(http.MethodGet)
-	server.HandleFunc("/device/info", ptz.GetDeviceInfoCtl).Methods(http.MethodGet)
-	server.HandleFunc("/device/status", ptz.GetDeviceStatusCtl).Methods(http.MethodGet)
-	server.HandleFunc("/device/config", ptz.GetDeviceConfigCtl).Methods(http.MethodGet)
+	deviceService := deviceapi.NewDeviceCtlService()
+
+	server.HandleFunc("/device/service/capa", deviceService.GetServiceCapaCtl).Methods(http.MethodGet)
+	server.HandleFunc("/device/info", deviceService.GetDeviceInfoCtl).Methods(http.MethodGet)
+	server.HandleFunc("/device/status", deviceService.GetDeviceStatusCtl).Methods(http.MethodGet)
+	server.HandleFunc("/device/config", deviceService.GetDeviceConfigCtl).Methods(http.MethodGet)
 }

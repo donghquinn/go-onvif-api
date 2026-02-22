@@ -1,6 +1,7 @@
 package deviceapi
 
 import (
+	"fmt"
 	"log/slog"
 	"net/http"
 
@@ -23,6 +24,7 @@ func (d *DeviceCtlService) GetServiceCapaCtl(res http.ResponseWriter, req *http.
 
 	cctvId := req.URL.Query().Get("cctv")
 	if cctvId == "" {
+		d.logger.Error("no cctv id provided")
 		response.Response(res, http.StatusBadRequest, response.CommonResponseWithMessage{
 			Status:  http.StatusBadRequest,
 			Code:    "SCP001",
@@ -31,10 +33,12 @@ func (d *DeviceCtlService) GetServiceCapaCtl(res http.ResponseWriter, req *http.
 
 		return
 	}
-
+	d.cctvId = cctvId
 	d.logger = d.logger.With("cctv_id", cctvId)
-	endpoint, getErr := database.GetDeviceInfo(cctvId)
-	if getErr != nil {
+
+	endpoint, err := database.GetDeviceInfo(cctvId)
+	if err != nil {
+		d.logger.Error(fmt.Sprintf("get device endpoint from database err: %v", err))
 		response.Response(res, http.StatusInternalServerError, response.CommonResponseWithMessage{
 			Status:  http.StatusInternalServerError,
 			Code:    "SCP002",
@@ -44,9 +48,9 @@ func (d *DeviceCtlService) GetServiceCapaCtl(res http.ResponseWriter, req *http.
 	}
 
 	device := DeviceConnect(endpoint.Endpoint) // TODO DB 조회
-	result, getErr := device.GetServiceCapability()
-
-	if getErr != nil {
+	result, err := device.GetServiceCapability()
+	if err != nil {
+		d.logger.Error(fmt.Sprintf("get device service capacity err: %v", err))
 		response.Response(res, http.StatusInternalServerError, response.CommonResponseWithMessage{
 			Status:  http.StatusInternalServerError,
 			Code:    "SCP003",
@@ -67,9 +71,10 @@ func (d *DeviceCtlService) GetServiceCapaCtl(res http.ResponseWriter, req *http.
 
 // Get Device Info
 func (d *DeviceCtlService) GetDeviceInfoCtl(res http.ResponseWriter, req *http.Request) {
+	d.logger = slog.With("service", "get_device_info")
 	cctvId := req.URL.Query().Get("cctv")
-
 	if cctvId == "" {
+		d.logger.Error("no cctv id provided")
 		response.Response(res, http.StatusBadRequest, response.CommonResponseWithMessage{
 			Status:  http.StatusBadRequest,
 			Code:    "DVF001",
@@ -79,8 +84,12 @@ func (d *DeviceCtlService) GetDeviceInfoCtl(res http.ResponseWriter, req *http.R
 		return
 	}
 
-	endpoint, getErr := database.GetDeviceInfo(cctvId)
-	if getErr != nil {
+	d.logger = d.logger.With("cctv_id", cctvId)
+	d.cctvId = cctvId
+
+	endpoint, err := database.GetDeviceInfo(cctvId)
+	if err != nil {
+		d.logger.Error(fmt.Sprintf("get device endpoint from database err: %v", err))
 		response.Response(res, http.StatusInternalServerError, response.CommonResponseWithMessage{
 			Status:  http.StatusInternalServerError,
 			Code:    "DVF002",
@@ -90,9 +99,9 @@ func (d *DeviceCtlService) GetDeviceInfoCtl(res http.ResponseWriter, req *http.R
 	}
 
 	device := DeviceConnect(endpoint.Endpoint) // TODO DB 조회
-	result, getErr := device.GetDeviceInfo()
-
-	if getErr != nil {
+	result, err := device.GetDeviceInfo()
+	if err != nil {
+		d.logger.Error(fmt.Sprintf("get device info err: %v", err))
 		response.Response(res, http.StatusInternalServerError, response.CommonResponseWithMessage{
 			Status: http.StatusInternalServerError,
 			Code:   "DVF003",

@@ -6,6 +6,7 @@ require (
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/beevik/etree v1.5.0 // indirect
 	github.com/donghquinn/gdct v1.3.0 // indirect
+	github.com/donghquinn/gqbd v1.3.6 // indirect
 	github.com/elgs/gostrgen v0.0.0-20220325073726-0c3e00d082f6 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.13 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
